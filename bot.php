@@ -13,6 +13,73 @@ $vk->sendOK(); //Говорим vk, что мы приняли callback
 $peer_id = $data->object->message->peer_id;
 $messag = $data->object->message->text; // Само сообщение от пользователя
 
+//получаем текст с подписками пользователя
+function getUserSubs($peer_id, $mysqli, $day, $daysOfWeek, $timesOfDay) {
+    //получаем id времени подписок пользователя
+	$response = $mysqli->query("SELECT `idTime` FROM `subscriptions` WHERE `idUser` = '" . $peer_id . "' ORDER BY `idTime`");
+    $var = mysqli_fetch_assoc($response);
+    $subs = array();
+    for ($i = 0; $var != false; $i++) {
+        $subs[$i] = $var["idTime"];
+        $var = mysqli_fetch_assoc($response);
+    }
+    
+    $i = 0;
+    $textUserSubs = "";
+    foreach ($subs as $sub) {
+        //получаем развернутые данные о каждом id подписки
+        $responses[$i] = $mysqli->query("SELECT * FROM `times` WHERE `id` = '" . $sub . "'");
+        $var = mysqli_fetch_assoc($responses[$i]);
+        //т.к. просматриваем подписки только на выбранный день недели
+        if ($day == $var["day"]) {
+            //номер подписки
+            $textUserSubs .= ($i + 1) . ") ";
+            //тип транспорта
+            if ($var["type"] == "tram") $textUserSubs .= "Трамвай №";
+            else $textUserSubs .= "Троллейбус №";
+            //номер транспорта, день недели, время
+            $textUserSubs .= $var["number"] . " " . $daysOfWeek[$var["day"]] . " " . $timesOfDay[$var["time"]] . "\n";
+            $i++;
+        }
+    }
+    //если нет подписок на этот день
+    if ($textUserSubs == "") $textUserSubs = "На " . $daysOfWeek[$day] . " подписок нет";
+    //возвращаем строку с подписками
+    return $textUserSubs;
+}
+
+//получаем текст с подписками пользователя
+function getAllUserSubs($peer_id, $mysqli, $daysOfWeek, $timesOfDay) {
+    //получаем id времени подписок пользователя
+	$response = $mysqli->query("SELECT `idTime` FROM `subscriptions` WHERE `idUser` = '" . $peer_id . "' ORDER BY `idTime`");
+    $var = mysqli_fetch_assoc($response);
+    $subs = array();
+    for ($i = 0; $var != false; $i++) {
+        $subs[$i] = $var["idTime"];
+        $var = mysqli_fetch_assoc($response);
+    }
+    
+    $i = 0;
+    $textUserSubs = "";
+    foreach ($subs as $sub) {
+        //получаем развернутые данные о каждом id подписки
+        $responses[$i] = $mysqli->query("SELECT * FROM `times` WHERE `id` = '" . $sub . "'");
+        $var = mysqli_fetch_assoc($responses[$i]);
+        //номер подписки
+        $textUserSubs .= ($i + 1) . ") ";
+        //тип транспорта
+        if ($var["type"] == "tram") $textUserSubs .= "Трамвай №";
+        else $textUserSubs .= "Троллейбус №";
+        //номер транспорта, день недели, время
+        $textUserSubs .= $var["number"] . " " . $daysOfWeek[$var["day"]] . " " . $timesOfDay[$var["time"]] . "\n";
+        $i++;
+    }
+    //если нет подписок на этот день
+    if ($textUserSubs == "") $textUserSubs = "У Вас нет подписок";
+    //возвращаем строку с подписками
+    return $textUserSubs;
+}
+
 
 $btn_start = $vk->buttonText('Начать', 'green', ['command' => 'start']);
 $btn_sub = $vk->buttonText('Запись', 'green', ['command' => 'btn_sub']);
@@ -168,21 +235,21 @@ if ($data->type == 'message_new') {
 		
 		case "btn_show_all" :
 		{
-            $textUserSubs = ""/*getAllUserSubs($peer_id, $mysqli, $daysOfWeek, $timesOfDay)*/;
+            $textUserSubs = getAllUserSubs($peer_id, $mysqli, $daysOfWeek, $timesOfDay);
             $vk->sendMessage($peer_id, $textUserSubs);
 		}break;
 		
 		case "btn_choose_day" :
 		{
 		    $vk->sendButton($peer_id, "Выберите день недели", [[$btn_mon, $btn_tue, $btn_wed], [$btn_thu, $btn_fri], [$btn_sat, $btn_sun], [$btn_back_show]]);
-			
+			$mysqli->query("UPDATE `users` SET `action` = 'my_sub' WHERE `users`.`idUser` = '".$peer_id."'");
 		}break;
 		
 		case "btn_delete" :
 		{
-		    $textUserSubs = "Выберите номер подписки: \n" . ""/*getAllUserSubs($peer_id, $mysqli, $daysOfWeek, $timesOfDay)*/;
+		    $textUserSubs = "Выберите номер подписки: \n" . getAllUserSubs($peer_id, $mysqli, $daysOfWeek, $timesOfDay);
             $vk->sendMessage($peer_id, $textUserSubs);
-		    
+		    $mysqli->query("UPDATE `users` SET `action` = 'delete' WHERE `users`.`idUser` = '".$peer_id."'");
 		}break;
 		
 		case "btn_trot":
@@ -250,8 +317,10 @@ if ($data->type == 'message_new') {
 			{
 				case "my_sub":
 				{
-                    $textUserSubs = ""/*getUserSubs($peer_id, $mysqli, 1, $daysOfWeek, $timesOfDay)*/;
+                    $textUserSubs = getUserSubs($peer_id, $mysqli, 1, $daysOfWeek, $timesOfDay);
                 	$vk->sendMessage($peer_id, $textUserSubs);
+				   
+	               
 				}break;
 				case "subscribe":
 				{
@@ -271,7 +340,7 @@ if ($data->type == 'message_new') {
 			{
 				case "my_sub":
 				{
-					$textUserSubs = ""/*getUserSubs($peer_id, $mysqli, 2, $daysOfWeek, $timesOfDay)*/;
+					$textUserSubs = getUserSubs($peer_id, $mysqli, 2, $daysOfWeek, $timesOfDay);
                 	$vk->sendMessage($peer_id, $textUserSubs);
 				}break;
 				case "subscribe":
@@ -292,7 +361,7 @@ if ($data->type == 'message_new') {
 			{
 				case "my_sub":
 				{
-				    $textUserSubs ="" /*getUserSubs($peer_id, $mysqli, 3, $daysOfWeek, $timesOfDay)*/;
+				    $textUserSubs = getUserSubs($peer_id, $mysqli, 3, $daysOfWeek, $timesOfDay);
                 	$vk->sendMessage($peer_id, $textUserSubs);
 				}break;
 				case "subscribe":
@@ -313,7 +382,7 @@ if ($data->type == 'message_new') {
 			{
 				case "my_sub":
 				{
-					$textUserSubs = ""/*getUserSubs($peer_id, $mysqli, 4, $daysOfWeek, $timesOfDay)*/;
+					$textUserSubs = getUserSubs($peer_id, $mysqli, 4, $daysOfWeek, $timesOfDay);
                 	$vk->sendMessage($peer_id, $textUserSubs);
 				}break;
 				case "subscribe":
@@ -334,7 +403,7 @@ if ($data->type == 'message_new') {
 			{
 				case "my_sub":
 				{
-					$textUserSubs = ""/*getUserSubs($peer_id, $mysqli, 5, $daysOfWeek, $timesOfDay)*/;
+					$textUserSubs = getUserSubs($peer_id, $mysqli, 5, $daysOfWeek, $timesOfDay);
                 	$vk->sendMessage($peer_id, $textUserSubs);
 				}break;
 				case "subscribe":
@@ -355,7 +424,7 @@ if ($data->type == 'message_new') {
 			{
 				case "my_sub":
 				{
-					$textUserSubs = ""/*getUserSubs($peer_id, $mysqli, 6, $daysOfWeek, $timesOfDay)*/;
+					$textUserSubs = getUserSubs($peer_id, $mysqli, 6, $daysOfWeek, $timesOfDay);
                 	$vk->sendMessage($peer_id, $textUserSubs);
 				}break;
 				case "subscribe":
@@ -376,7 +445,7 @@ if ($data->type == 'message_new') {
 			{
 				case "my_sub":
 				{
-					$textUserSubs = ""/*getUserSubs($peer_id, $mysqli, 7, $daysOfWeek, $timesOfDay)*/;
+					$textUserSubs = getUserSubs($peer_id, $mysqli, 7, $daysOfWeek, $timesOfDay);
                 	$vk->sendMessage($peer_id, $textUserSubs);
 				}break;
 				case "subscribe":
@@ -486,7 +555,7 @@ if ($data->type == 'message_new') {
                     else {
                         $vk->sendMessage($peer_id, $textTransport);
                     }
-					//$vk->sendMessage($peer_id, "Действия при состоянии");
+					
 				}break;
 				default:
 				{
@@ -1274,16 +1343,32 @@ if ($data->type == 'message_new') {
 			}
 		}break;
 		
+	    
 		default : 
 		{
 		    switch($action) {
 		    case "subscribe":{
                 if($messag >=1 && $messag <= 19) 
                 {
-    		        
-                    $havePost = false; //есть ли уже подписка или нет
+    		        $hour = $messag;
+    		        switch($path)
+                    {
+                        case "trot": 
+                        {
+                            $idtime = $TRAMS[$number] * $ONETRANSPORT + ($day - 1) * $COUNTHOURS + $hour;
+                        } break;
+                        case "trob": 
+                        {
+                            $idtime = ($TROLLEYS[$number] + count($TRAMS)) * $ONETRANSPORT + ($day - 1) * $COUNTHOURS + $hour;
+                        } break;
+                    }
+                   
+                    $response = $mysqli->query("SELECT `id` FROM `subscriptions` WHERE `idUser` = '" . $peer_id . "' AND `idTime` = '" . $idtime . "'");
+                    $havePost = mysqli_fetch_assoc($response);
+                    $havePost = $havePost["id"];
                     if (!$havePost) {
-                        $Ido = true; //сделан ли запрос к базе или нет
+                        $Ido = $mysqli->query("INSERT INTO `subscriptions` (`id`, `idTime`, `idUser`)
+                                        VALUES ('NULL', '" . $idtime . "', '" . $peer_id . "')");
                         if ($Ido) 
                         {
                             $vk->sendMessage($peer_id, "&#10004; Изменения сохранены ");
@@ -1305,7 +1390,29 @@ if ($data->type == 'message_new') {
     		}break;
     		
     		case "delete": {
-                $vk->sendMessage($peer_id, "&#10060; Ошибка! Введены некорректные данные ");
+    		    //получаем id времени подписок пользователя
+            	$response = $mysqli->query("SELECT `idTime` FROM `subscriptions` WHERE `idUser` = '" . $peer_id . "' ORDER BY `idTime`");
+                $var = mysqli_fetch_assoc($response);
+                $subs = array();
+                for ($i = 0; $var != false; $i++) {
+                    $subs[$i] = $var["idTime"];
+                    $var = mysqli_fetch_assoc($response);
+                }
+                
+                if ($messag >= 1 && $messag <= $i) {
+                    $response = $mysqli->query("SELECT * FROM `times` WHERE `id` = '" . $subs[$messag - 1] . "'");
+                    $var = mysqli_fetch_assoc($response);
+                    $flagDelete = $mysqli->query("DELETE FROM `subscriptions` WHERE `subscriptions`.`idUser` = '" . $peer_id . "' AND `idTime` = '" . $var["id"] . "'");
+                    if ($flagDelete) {
+                        
+                    }
+                    else {
+                        //ошибка бд
+                    }
+                }
+                else {
+                    //пользователь вве некорректные данные
+                }
     		}break;
     		
     		default: {
