@@ -223,30 +223,7 @@ function postAnalysis($newPosts, $postsFromDB, $cntNewPosts) {
             }
             
         }
-         /*for ($i = 0; $i < $cntNewPosts; $i++) {
-            $checkPostDB = $postsFromDB[$i]["text"]; //сохраняем сюда текст поста из БД для дальнейших проверок
-            $checkPostNew = $newPosts[$i]["text"]; //сохраняем сюда текст поста со стенки для дальнейших проверок
-            $checkIfNot = "Прервано движение"; //проверочная подстрока для выявления того, что это нужный вид поста
-            $posNot = strpos($checkPostNew,$checkIfNot);
-            if ($posNot === false) {
-               $analysis[$i]["date"] = $newPosts[$i]["date"];
-               $analysis[$i]["text"] = $newPosts[$i]["text"];
-               $analysis[$i]["service"] = true;
-               $analysis[$i]["status"] = false;
-               $analysis[$i]["masTram"] = [];
-               $analysis[$i]["masTrol"] = [];
-            }
-            else {
-                  $transportFromPost = getTransportFromText($checkPostNew);
-                  $analysis[$i]["date"] = $newPosts[$i]["date"];
-                  $analysis[$i]["text"] = $newPosts[$i]["text"];
-                  $analysis[$i]["service"] = false;
-                  $analysis[$i]["status"] = false;
-                  $analysis[$i]["masTram"] = [$transportFromPost["trams"]];
-                  $analysis[$i]["masTrol"] = [$transportFromPost["trolleys"]];
-            }
-            
-        }*/
+        
     }
     
     
