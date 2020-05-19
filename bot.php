@@ -66,6 +66,43 @@ $btn_fri = $vk->buttonText('Пятница','white',['command' => 'btn_fri']);
 $btn_sat = $vk->buttonText('Суббота','white',['command' => 'btn_sat']);
 $btn_sun = $vk->buttonText('Воскресенье','white',['command' => 'btn_sun']);
 
+$timeUser = "Выберите время, в течение которого хотите получать уведомления
+1 -- 05.00 - 06.00
+2 -- 06.00 - 07.00
+3 -- 07.00 - 08.00
+4 -- 08.00 - 09.00
+5 -- 09.00 - 10.00
+6 -- 10.00 - 11.00
+7 -- 11.00 - 12.00
+8 -- 12.00 - 13.00
+9 -- 13.00 - 14.00
+10 -- 14.00 - 15.00
+11 -- 15.00 - 16.00
+12 -- 16.00 - 17.00
+13 -- 17.00 - 18.00
+14 -- 18.00 - 19.00
+15 -- 19.00 - 20.00
+16 -- 20.00 - 21.00                                                        
+17 -- 21.00 - 22.00
+18 -- 22.00 - 23.00
+19 -- 23.00 - 00.00";
+
+$HelloUser = "Возможности бота:
+
+----------ДОБАВЛЕНИЕ----------
+Если Вы хотите получать информацию о интересующем Вас маршруте, нажмите кнопку Запись и выберите данные о необходимом маршруте
+
+----------МОИ ЗАПИСИ----------
+Если Вы хотите увидеть свои подписки или удалить маршрут, нажмите кнопку Мои записи, после чего нажмите на кнопку Показать, чтобы получить Ваши маршруты; кнопку Удалить, чтобы удалить запись
+
+----------СОСТОЯНИЕ-----------
+Если Вы хотите получить информацию о состоянии транспорта, нажмите кнопку Состояние
+
+----------ОТПИСАТЬСЯ----------
+Если Вы хотите отписаться от всех уведомлений, нажмите кнопку Отписаться
+
+Выберите команду";
+
 $action;
 $path;
 $day;
@@ -123,12 +160,31 @@ if ($data->type == 'message_new') {
 		    $vk->sendButton($peer_id, "Выберите действие", [[$btn_show_me], [$btn_delete], [$btn_back_blue_sub]]);
 		}break;
 		
+		
+		case "btn_show_me" : 
+		{
+		    $vk->sendButton($peer_id, "Выберите действие", [[$btn_show_all], [$btn_choose_day], [$btn_back_my_sub]]);
+		}break;
+		
+		case "btn_show_all" :
+		{
+            $textUserSubs = ""/*getAllUserSubs($peer_id, $mysqli, $daysOfWeek, $timesOfDay)*/;
+            $vk->sendMessage($peer_id, $textUserSubs);
+		}break;
+		
 		case "btn_choose_day" :
 		{
 		    $vk->sendButton($peer_id, "Выберите день недели", [[$btn_mon, $btn_tue, $btn_wed], [$btn_thu, $btn_fri], [$btn_sat, $btn_sun], [$btn_back_show]]);
-			$mysqli->query("UPDATE `users` SET `action` = 'my_sub' WHERE `users`.`idUser` = '".$peer_id."'");
+			
 		}break;
-	
+		
+		case "btn_delete" :
+		{
+		    $textUserSubs = "Выберите номер подписки: \n" . ""/*getAllUserSubs($peer_id, $mysqli, $daysOfWeek, $timesOfDay)*/;
+            $vk->sendMessage($peer_id, $textUserSubs);
+		    
+		}break;
+		
 		case "btn_trot":
 		{
 			switch($action)
@@ -169,6 +225,24 @@ if ($data->type == 'message_new') {
 			$mysqli->query("UPDATE `users` SET `path` = 'trob' WHERE `users`.`idUser` = '".$peer_id."'");
 		}break;
 		
+		case "btn_unsub":
+		{
+		    $vk->sendButton($peer_id, "Вы уверены?", [[$btn_no], [$btn_yes]]);
+		}break;
+		
+		case "btn_yes" : 
+		{
+		    $mysqli->query("DELETE FROM `users` WHERE `users`.`idUser` = " . $peer_id);
+			$mysqli->query("DELETE FROM `subscriptions` WHERE `subscriptions`.`idUser` = " . $peer_id);
+			$vk->sendButton($peer_id,"Для начала работы нажмите начать", [[$btn_start]]);
+		}break;
+		
+		case "btn_no" : 
+		{
+		   $vk->sendButton($peer_id, "Выберите команду", [[$btn_sub], [$btn_status], [$btn_my_sub], [$btn_unsub]]);
+		   $mysqli->query("UPDATE `users` SET `action` = '', `path` = '', `day` = '', `number` = '' WHERE `users`.`idUser` = '".$peer_id."'");
+		}break;
+		
 		
 		case "btn_mon":
 		{
@@ -176,7 +250,7 @@ if ($data->type == 'message_new') {
 			{
 				case "my_sub":
 				{
-                    $textUserSubs = getUserSubs($peer_id, $mysqli, 1, $daysOfWeek, $timesOfDay);
+                    $textUserSubs = ""/*getUserSubs($peer_id, $mysqli, 1, $daysOfWeek, $timesOfDay)*/;
                 	$vk->sendMessage($peer_id, $textUserSubs);
 				}break;
 				case "subscribe":
@@ -197,7 +271,7 @@ if ($data->type == 'message_new') {
 			{
 				case "my_sub":
 				{
-					$textUserSubs = getUserSubs($peer_id, $mysqli, 2, $daysOfWeek, $timesOfDay);
+					$textUserSubs = ""/*getUserSubs($peer_id, $mysqli, 2, $daysOfWeek, $timesOfDay)*/;
                 	$vk->sendMessage($peer_id, $textUserSubs);
 				}break;
 				case "subscribe":
@@ -218,7 +292,7 @@ if ($data->type == 'message_new') {
 			{
 				case "my_sub":
 				{
-				    $textUserSubs = getUserSubs($peer_id, $mysqli, 3, $daysOfWeek, $timesOfDay);
+				    $textUserSubs ="" /*getUserSubs($peer_id, $mysqli, 3, $daysOfWeek, $timesOfDay)*/;
                 	$vk->sendMessage($peer_id, $textUserSubs);
 				}break;
 				case "subscribe":
@@ -239,7 +313,7 @@ if ($data->type == 'message_new') {
 			{
 				case "my_sub":
 				{
-					$textUserSubs = getUserSubs($peer_id, $mysqli, 4, $daysOfWeek, $timesOfDay);
+					$textUserSubs = ""/*getUserSubs($peer_id, $mysqli, 4, $daysOfWeek, $timesOfDay)*/;
                 	$vk->sendMessage($peer_id, $textUserSubs);
 				}break;
 				case "subscribe":
@@ -260,7 +334,7 @@ if ($data->type == 'message_new') {
 			{
 				case "my_sub":
 				{
-					$textUserSubs = getUserSubs($peer_id, $mysqli, 5, $daysOfWeek, $timesOfDay);
+					$textUserSubs = ""/*getUserSubs($peer_id, $mysqli, 5, $daysOfWeek, $timesOfDay)*/;
                 	$vk->sendMessage($peer_id, $textUserSubs);
 				}break;
 				case "subscribe":
@@ -281,7 +355,7 @@ if ($data->type == 'message_new') {
 			{
 				case "my_sub":
 				{
-					$textUserSubs = getUserSubs($peer_id, $mysqli, 6, $daysOfWeek, $timesOfDay);
+					$textUserSubs = ""/*getUserSubs($peer_id, $mysqli, 6, $daysOfWeek, $timesOfDay)*/;
                 	$vk->sendMessage($peer_id, $textUserSubs);
 				}break;
 				case "subscribe":
@@ -302,7 +376,7 @@ if ($data->type == 'message_new') {
 			{
 				case "my_sub":
 				{
-					$textUserSubs = getUserSubs($peer_id, $mysqli, 7, $daysOfWeek, $timesOfDay);
+					$textUserSubs = ""/*getUserSubs($peer_id, $mysqli, 7, $daysOfWeek, $timesOfDay)*/;
                 	$vk->sendMessage($peer_id, $textUserSubs);
 				}break;
 				case "subscribe":
@@ -318,6 +392,12 @@ if ($data->type == 'message_new') {
 		}break;
 		
 		case "btn_back_sub":
+		{
+			$vk->sendButton($peer_id, "Выберите команду", [[$btn_sub], [$btn_status], [$btn_my_sub], [$btn_unsub]]);
+			$mysqli->query("UPDATE `users` SET `action` = '' WHERE `users`.`idUser` = '".$peer_id."'");
+		}break;
+		
+		case "btn_back_blue_sub":
 		{
 			$vk->sendButton($peer_id, "Выберите команду", [[$btn_sub], [$btn_status], [$btn_my_sub], [$btn_unsub]]);
 			$mysqli->query("UPDATE `users` SET `action` = '' WHERE `users`.`idUser` = '".$peer_id."'");
@@ -399,6 +479,14 @@ if ($data->type == 'message_new') {
                     $textTransport = mysqli_fetch_assoc($response);
                     $textTransport = $textTransport["TextPost"];
                     
+                    //выводим информацию пользователю
+                    if ($statusTransport == 1) {
+                        $vk->sendMessage($peer_id, "Движение троллейбуса №1 не прервано");
+                    }
+                    else {
+                        $vk->sendMessage($peer_id, $textTransport);
+                    }
+					//$vk->sendMessage($peer_id, "Действия при состоянии");
 				}break;
 				default:
 				{
@@ -432,6 +520,13 @@ if ($data->type == 'message_new') {
                             $textTransport = mysqli_fetch_assoc($response);
                             $textTransport = $textTransport["TextPost"];
                             
+							//выводим информацию пользователю
+                            if ($statusTransport == 1) {
+                                $vk->sendMessage($peer_id, "Движение трамвая №2 не прервано");
+                            }
+                            else {
+                                $vk->sendMessage($peer_id, $textTransport);
+                            }
 						}break;
 						default:
 						{
@@ -459,7 +554,13 @@ if ($data->type == 'message_new') {
         				    $response = $mysqli->query("SELECT `TextPost` FROM `transport` WHERE `TypeTransport` = 'Trolley' AND `NumberTransport` = '2'");
                             $textTransport = mysqli_fetch_assoc($response);
                             $textTransport = $textTransport["TextPost"];
-							
+							//выводим информацию пользователю
+                            if ($statusTransport == 1) {
+                                $vk->sendMessage($peer_id, "Движение троллейбуса №2 не прервано");
+                            }
+                            else {
+                                $vk->sendMessage($peer_id, $textTransport);
+                            }
 						}break;
 						default:
 						{
@@ -495,6 +596,13 @@ if ($data->type == 'message_new') {
                     $textTransport = mysqli_fetch_assoc($response);
                     $textTransport = $textTransport["TextPost"];
                     
+					//выводим информацию пользователю
+                    if ($statusTransport == 1) {
+                        $vk->sendMessage($peer_id, "Движение троллейбуса №2а не прервано");
+                    }
+                    else {
+                        $vk->sendMessage($peer_id, $textTransport);
+                    }
 				}break;
 				default:
 				{
@@ -528,6 +636,13 @@ if ($data->type == 'message_new') {
                             $textTransport = mysqli_fetch_assoc($response);
                             $textTransport = $textTransport["TextPost"];
                             
+							//выводим информацию пользователю
+                            if ($statusTransport == 1) {
+                                $vk->sendMessage($peer_id, "Движение трамвая №3 не прервано");
+                            }
+                            else {
+                                $vk->sendMessage($peer_id, $textTransport);
+                            }
 						}break;
 						default:
 						{
@@ -556,6 +671,13 @@ if ($data->type == 'message_new') {
                             $textTransport = mysqli_fetch_assoc($response);
                             $textTransport = $textTransport["TextPost"];
                             
+							//выводим информацию пользователю
+                            if ($statusTransport == 1) {
+                                $vk->sendMessage($peer_id, "Движение троллейбуса №3 не прервано");
+                            }
+                            else {
+                                $vk->sendMessage($peer_id, $textTransport);
+                            }
 						}break;
 						default:
 						{
@@ -595,6 +717,13 @@ if ($data->type == 'message_new') {
                             $textTransport = mysqli_fetch_assoc($response);
                             $textTransport = $textTransport["TextPost"];
                             
+							//выводим информацию пользователю
+                            if ($statusTransport == 1) {
+                                $vk->sendMessage($peer_id, "Движение трамвая №4 не прервано");
+                            }
+                            else {
+                                $vk->sendMessage($peer_id, $textTransport);
+                            }
 						}break;
 						default:
 						{
@@ -623,6 +752,13 @@ if ($data->type == 'message_new') {
                             $textTransport = mysqli_fetch_assoc($response);
                             $textTransport = $textTransport["TextPost"];
                             
+							//выводим информацию пользователю
+                            if ($statusTransport == 1) {
+                                $vk->sendMessage($peer_id, "Движение трамвая №4 не прервано");
+                            }
+                            else {
+                                $vk->sendMessage($peer_id, $textTransport);
+                            }
 						}break;
 						default:
 						{
@@ -662,6 +798,13 @@ if ($data->type == 'message_new') {
                             $textTransport = mysqli_fetch_assoc($response);
                             $textTransport = $textTransport["TextPost"];
                             
+							//выводим информацию пользователю
+                            if ($statusTransport == 1) {
+                                $vk->sendMessage($peer_id, "Движение трамвая №5 не прервано");
+                            }
+                            else {
+                                $vk->sendMessage($peer_id, $textTransport);
+                            }
 						}break;
 						default:
 						{
@@ -690,6 +833,13 @@ if ($data->type == 'message_new') {
                             $textTransport = mysqli_fetch_assoc($response);
                             $textTransport = $textTransport["TextPost"];
                             
+							//выводим информацию пользователю
+                            if ($statusTransport == 1) {
+                                $vk->sendMessage($peer_id, "Движение троллейбуса №5 не прервано");
+                            }
+                            else {
+                                $vk->sendMessage($peer_id, $textTransport);
+                            }
 						}break;
 						default:
 						{
@@ -725,6 +875,13 @@ if ($data->type == 'message_new') {
                     $textTransport = mysqli_fetch_assoc($response);
                     $textTransport = $textTransport["TextPost"];
                     
+					//выводим информацию пользователю
+                    if ($statusTransport == 1) {
+                        $vk->sendMessage($peer_id, "Движение трамвая №6 не прервано");
+                    }
+                    else {
+                        $vk->sendMessage($peer_id, $textTransport);
+                    }
 				}break;
 				default:
 				{
@@ -758,6 +915,13 @@ if ($data->type == 'message_new') {
                             $textTransport = mysqli_fetch_assoc($response);
                             $textTransport = $textTransport["TextPost"];
                             
+							//выводим информацию пользователю
+                            if ($statusTransport == 1) {
+                                $vk->sendMessage($peer_id, "Движение трамвая №7 не прервано");
+                            }
+                            else {
+                                $vk->sendMessage($peer_id, $textTransport);
+                            }
 						}break;
 						default:
 						{
@@ -786,6 +950,13 @@ if ($data->type == 'message_new') {
                             $textTransport = mysqli_fetch_assoc($response);
                             $textTransport = $textTransport["TextPost"];
                             
+							//выводим информацию пользователю
+                            if ($statusTransport == 1) {
+                                $vk->sendMessage($peer_id, "Движение троллейбуса №7 не прервано");
+                            }
+                            else {
+                                $vk->sendMessage($peer_id, $textTransport);
+                            }
 						}break;
 						default:
 						{
@@ -821,6 +992,13 @@ if ($data->type == 'message_new') {
                     $textTransport = mysqli_fetch_assoc($response);
                     $textTransport = $textTransport["TextPost"];
                     
+					//выводим информацию пользователю
+                    if ($statusTransport == 1) {
+                        $vk->sendMessage($peer_id, "Движение трамвая №8 не прервано");
+                    }
+                    else {
+                        $vk->sendMessage($peer_id, $textTransport);
+                    }
 				}break;
 				default:
 				{
@@ -850,6 +1028,13 @@ if ($data->type == 'message_new') {
                     $textTransport = mysqli_fetch_assoc($response);
                     $textTransport = $textTransport["TextPost"];
                     
+					//выводим информацию пользователю
+                    if ($statusTransport == 1) {
+                        $vk->sendMessage($peer_id, "Движение трамвая №9 не прервано");
+                    }
+                    else {
+                        $vk->sendMessage($peer_id, $textTransport);
+                    }
 				}break;
 				default:
 				{
@@ -884,6 +1069,13 @@ if ($data->type == 'message_new') {
                             $textTransport = $textTransport["TextPost"];
                             
 							
+							//выводим информацию пользователю
+                            if ($statusTransport == 1) {
+                                $vk->sendMessage($peer_id, "Движение трамвая №10 не прервано");
+                            }
+                            else {
+                                $vk->sendMessage($peer_id, $textTransport);
+                            }
 						}break;
 						default:
 						{
@@ -912,6 +1104,13 @@ if ($data->type == 'message_new') {
                             $textTransport = mysqli_fetch_assoc($response);
                             $textTransport = $textTransport["TextPost"];
 						    
+							//выводим информацию пользователю
+                            if ($statusTransport == 1) {
+                                $vk->sendMessage($peer_id, "Движение троллейбуса №10 не прервано");
+                            }
+                            else {
+                                $vk->sendMessage($peer_id, $textTransport);
+                            }
 						}
 					}
 				}break;
@@ -947,6 +1146,13 @@ if ($data->type == 'message_new') {
                             $textTransport = mysqli_fetch_assoc($response);
                             $textTransport = $textTransport["TextPost"];
                             
+							//выводим информацию пользователю
+                            if ($statusTransport == 1) {
+                                $vk->sendMessage($peer_id, "Движение трамвая №11 не прервано");
+                            }
+                            else {
+                                $vk->sendMessage($peer_id, $textTransport);
+                            }
 						}break;
 						default:
 						{
@@ -975,6 +1181,13 @@ if ($data->type == 'message_new') {
                             $textTransport = mysqli_fetch_assoc($response);
                             $textTransport = $textTransport["TextPost"];
                             
+							//выводим информацию пользователю
+                            if ($statusTransport == 1) {
+                                $vk->sendMessage($peer_id, "Движение троллейбуса №11 не прервано");
+                            }
+                            else {
+                                $vk->sendMessage($peer_id, $textTransport);
+                            }
 						}break;
 						default:
 						{
@@ -1010,6 +1223,13 @@ if ($data->type == 'message_new') {
                     $textTransport = mysqli_fetch_assoc($response);
                     $textTransport = $textTransport["TextPost"];
                     
+					//выводим информацию пользователю
+                    if ($statusTransport == 1) {
+                        $vk->sendMessage($peer_id, "Движение троллейбуса №15 не прервано");
+                    }
+                    else {
+                        $vk->sendMessage($peer_id, $textTransport);
+                    }
 				}break;
 				default:
 				{
@@ -1039,6 +1259,13 @@ if ($data->type == 'message_new') {
                     $textTransport = mysqli_fetch_assoc($response);
                     $textTransport = $textTransport["TextPost"];
                     
+					//выводим информацию пользователю
+                    if ($statusTransport == 1) {
+                        $vk->sendMessage($peer_id, "Движение троллейбуса №16 не прервано");
+                    }
+                    else {
+                        $vk->sendMessage($peer_id, $textTransport);
+                    }
 				}break;
 				default:
 				{
@@ -1047,10 +1274,44 @@ if ($data->type == 'message_new') {
 			}
 		}break;
 		
-	    
 		default : 
 		{
-		    
+		    switch($action) {
+		    case "subscribe":{
+                if($messag >=1 && $messag <= 19) 
+                {
+    		        
+                    $havePost = false; //есть ли уже подписка или нет
+                    if (!$havePost) {
+                        $Ido = true; //сделан ли запрос к базе или нет
+                        if ($Ido) 
+                        {
+                            $vk->sendMessage($peer_id, "&#10004; Изменения сохранены ");
+                        }
+                        else 
+                        {
+                            $vk->sendMessage($peer_id, "&#10060; Ошибка! Изменения не сохранены ");
+                        }
+                    }
+                    else {
+                        $vk->sendMessage($peer_id, "&#10060; Ошибка! Вы уже подписаны на уведомления в данное время ");
+                    }
+                    
+                }
+                else 
+                {
+                    $vk->sendMessage($peer_id, "&#10060; Ошибка! Введены некорректные данные ");
+                }
+    		}break;
+    		
+    		case "delete": {
+                $vk->sendMessage($peer_id, "&#10060; Ошибка! Введены некорректные данные ");
+    		}break;
+    		
+    		default: {
+    		    $vk->sendMessage($peer_id, "&#10060; Ошибка! Введены некорректные данные ");
+    		}break;
+		    }
 		}break;
 	}
 }
