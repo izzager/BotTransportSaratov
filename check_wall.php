@@ -80,7 +80,11 @@ $analysedPosts = postAnalysis($newPosts, $postsFromDB, $cntNewPosts);
 echo json_encode($analysedPosts);
 
 //для случая, когда запись удалили
-if ($newPosts[0]["date"] < $post1FromDB["date"]) $cntNewPosts = -1;
+if ($newPosts[0]["date"] < $post1FromDB["date"]) {
+	$cntNewPosts = -1;
+	//значт транспорт ходит
+	$mysqli->query("UPDATE `transport` SET `Status` = '1' WHERE `transport`.`TextPost` = '" . $post1FromDB["date"] . "'");
+}
 
 //для каждого проанализированного поста (начинаем с конца, т.к. в конце более старые посты)
 for ($i = $countPost - 1; $i >= 0; $i--) {
