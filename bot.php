@@ -38,6 +38,9 @@ function getUserSubs($peer_id, $mysqli, $day, $daysOfWeek, $timesOfDay) {
             if ($var["type"] == "tram") $textUserSubs .= "Трамвай №";
             else $textUserSubs .= "Троллейбус №";
             //номер транспорта, день недели, время
+            if ($var["number"] == 20) {
+                $var["number"] = "2а";
+            }
             $textUserSubs .= $var["number"] . " " . $daysOfWeek[$var["day"]] . " " . $timesOfDay[$var["time"]] . "\n";
             $i++;
         }
@@ -65,21 +68,26 @@ function getAllUserSubs($peer_id, $mysqli, $daysOfWeek, $timesOfDay) {
         //получаем развернутые данные о каждом id подписки
         $responses[$i] = $mysqli->query("SELECT * FROM `times` WHERE `id` = '" . $sub . "'");
         $var = mysqli_fetch_assoc($responses[$i]);
-        //номер подписки
-        $textUserSubs .= ($i + 1) . ") ";
-        //тип транспорта
-        if ($var["type"] == "tram") $textUserSubs .= "Трамвай №";
-        else $textUserSubs .= "Троллейбус №";
-        //номер транспорта, день недели, время
-        $textUserSubs .= $var["number"] . " " . $daysOfWeek[$var["day"]] . " " . $timesOfDay[$var["time"]] . "\n";
-        $i++;
+        //т.к. просматриваем подписки только на выбранный день недели
+        //if ($day == $var["day"]) {
+            //номер подписки
+            $textUserSubs .= ($i + 1) . ") ";
+            //тип транспорта
+            if ($var["type"] == "tram") $textUserSubs .= "Трамвай №";
+            else $textUserSubs .= "Троллейбус №";
+            //номер транспорта, день недели, время
+            if ($var["number"] == 20) {
+                $var["number"] = "2а";
+            }
+            $textUserSubs .= $var["number"] . " " . $daysOfWeek[$var["day"]] . " " . $timesOfDay[$var["time"]] . "\n";
+            $i++;
+        //}
     }
     //если нет подписок на этот день
     if ($textUserSubs == "") $textUserSubs = "У Вас нет подписок";
     //возвращаем строку с подписками
     return $textUserSubs;
 }
-
 
 $btn_start = $vk->buttonText('Начать', 'green', ['command' => 'start']);
 $btn_sub = $vk->buttonText('Запись', 'green', ['command' => 'btn_sub']);
@@ -133,6 +141,46 @@ $btn_fri = $vk->buttonText('Пятница','white',['command' => 'btn_fri']);
 $btn_sat = $vk->buttonText('Суббота','white',['command' => 'btn_sat']);
 $btn_sun = $vk->buttonText('Воскресенье','white',['command' => 'btn_sun']);
 
+$btn_time_5 = $vk->buttonText('5-6','white',['command' => 'btn_time_5']);
+$btn_time_6 = $vk->buttonText('6-7','white',['command' => 'btn_time_6']);
+$btn_time_7 = $vk->buttonText('7-8','white',['command' => 'btn_time_7']);
+$btn_time_8 = $vk->buttonText('8-9','white',['command' => 'btn_time_8']);
+$btn_time_9 = $vk->buttonText('9-10','white',['command' => 'btn_time_9']);
+$btn_time_10 = $vk->buttonText('10-11','white',['command' => 'btn_time_10']);
+$btn_time_11 = $vk->buttonText('11-12','white',['command' => 'btn_time_11']);
+$btn_time_12 = $vk->buttonText('12-13','white',['command' => 'btn_time_12']);
+$btn_time_13 = $vk->buttonText('13-14','white',['command' => 'btn_time_13']);
+$btn_time_14 = $vk->buttonText('14-15','white',['command' => 'btn_time_14']);
+$btn_time_15 = $vk->buttonText('15-16','white',['command' => 'btn_time_15']);
+$btn_time_16 = $vk->buttonText('16-17','white',['command' => 'btn_time_16']);
+$btn_time_17 = $vk->buttonText('17-18','white',['command' => 'btn_time_17']);
+$btn_time_18 = $vk->buttonText('18-19','white',['command' => 'btn_time_18']);
+$btn_time_19 = $vk->buttonText('19-20','white',['command' => 'btn_time_19']);
+$btn_time_20 = $vk->buttonText('20-21','white',['command' => 'btn_time_20']);
+$btn_time_21 = $vk->buttonText('21-22','white',['command' => 'btn_time_21']);
+$btn_time_22 = $vk->buttonText('22-23','white',['command' => 'btn_time_22']);
+$btn_time_23 = $vk->buttonText('23-24','white',['command' => 'btn_time_23']);
+$btns_back_path_trol = [[$btn_path_1, $btn_path_2, $btn_path_2a, $btn_path_3], 
+						[$btn_path_4, $btn_path_5, $btn_path_7, $btn_path_10], 
+						[$btn_path_11, $btn_path_15, $btn_path_16], 
+						[$btn_back_trob_sub] ];
+$btns_back_path_tram = [[$btn_path_2, $btn_path_3, $btn_path_4, $btn_path_5, $btn_path_6], 
+						[$btn_path_7, $btn_path_8, $btn_path_9, $btn_path_10, $btn_path_11], 
+						[$btn_back_trot_sub] ];
+$btn_back_trol_sub_num = $vk->buttonText('Назад', 'red',['command' => 'btn_back_trol_sub_num']);
+$btn_back_tram_sub_num = $vk->buttonText('Назад', 'red',['command' => 'btn_back_tram_sub_num']);
+$btns_times_trol = [[$btn_time_5, $btn_time_6, $btn_time_7, $btn_time_8, $btn_time_9],
+				[$btn_time_10, $btn_time_11, $btn_time_12, $btn_time_13, $btn_time_14],
+				[$btn_time_15, $btn_time_16, $btn_time_17, $btn_time_18, $btn_time_19],
+				[$btn_time_20, $btn_time_21, $btn_time_22, $btn_time_23],
+				[$btn_back_trol_sub_num]];
+$btns_times_tram = [[$btn_time_5, $btn_time_6, $btn_time_7, $btn_time_8, $btn_time_9],
+				[$btn_time_10, $btn_time_11, $btn_time_12, $btn_time_13, $btn_time_14],
+				[$btn_time_15, $btn_time_16, $btn_time_17, $btn_time_18, $btn_time_19],
+				[$btn_time_20, $btn_time_21, $btn_time_22, $btn_time_23],
+				[$btn_back_tram_sub_num]];
+				
+
 $timeUser = "Выберите время, в течение которого хотите получать уведомления
 1 -- 05.00 - 06.00
 2 -- 06.00 - 07.00
@@ -178,8 +226,7 @@ $number;
 if ($data->type == 'message_new') {
 	
     $payload = $data->object->message->payload;
-    if (isset($payload))
-    {
+    if (isset($payload)) {
         $payload = json_decode($payload, True);
     }
 	$payload = $payload['command'];
@@ -197,10 +244,10 @@ if ($data->type == 'message_new') {
 	$number = mysqli_fetch_assoc($response);
 	$number = $number["number"];
 	
+	
 	switch($payload)
 	{
-		case "start":
-		{
+		case "start": {
 			$response = $mysqli->query("SELECT `id` FROM `users` WHERE `idUser` = '" . $peer_id . "'");
 			$isSub = mysqli_fetch_assoc($response);
 			if ($isSub == NULL) {
@@ -208,1157 +255,263 @@ if ($data->type == 'message_new') {
 								VALUES ('NULL', '" . $peer_id . "', 'start', '', '', '')");
 			}
 			$vk->sendButton($peer_id, $HelloUser, [[$btn_sub], [$btn_status], [$btn_my_sub], [$btn_unsub]]);
-		}break;
+		} break;
 		
-		case "btn_sub":
-		{
+		case "btn_sub": {
 			$vk->sendButton($peer_id, "Выберите день недели", [[$btn_mon, $btn_tue, $btn_wed], [$btn_thu, $btn_fri], [$btn_sat, $btn_sun], [$btn_back_sub]]);
 			$mysqli->query("UPDATE `users` SET `action` = 'subscribe' WHERE `users`.`idUser` = '".$peer_id."'");
-		}break;
+		} break;
 		
-		case "btn_status":
-		{
+		case "btn_status": {
 			$vk->sendButton($peer_id, "Выберите вид транспорта", [[$btn_trot], [$btn_trob], [$btn_back_status]]);
 			$mysqli->query("UPDATE `users` SET `action` = 'status' WHERE `users`.`idUser` = '".$peer_id."'");
-		}break;
+		} break;
 		
-		case "btn_my_sub":
-		{
+		case "btn_my_sub": {
 		    $vk->sendButton($peer_id, "Выберите действие", [[$btn_show_me], [$btn_delete], [$btn_back_blue_sub]]);
-		}break;
+		} break;
 		
 		
-		case "btn_show_me" : 
-		{
+		case "btn_show_me": {
 		    $vk->sendButton($peer_id, "Выберите действие", [[$btn_show_all], [$btn_choose_day], [$btn_back_my_sub]]);
-		}break;
+		} break;
 		
-		case "btn_show_all" :
-		{
+		case "btn_show_all": {
             $textUserSubs = getAllUserSubs($peer_id, $mysqli, $daysOfWeek, $timesOfDay);
             $vk->sendMessage($peer_id, $textUserSubs);
-		}break;
+		} break;
 		
-		case "btn_choose_day" :
-		{
+		case "btn_choose_day": {
 		    $vk->sendButton($peer_id, "Выберите день недели", [[$btn_mon, $btn_tue, $btn_wed], [$btn_thu, $btn_fri], [$btn_sat, $btn_sun], [$btn_back_show]]);
 			$mysqli->query("UPDATE `users` SET `action` = 'my_sub' WHERE `users`.`idUser` = '".$peer_id."'");
-		}break;
+		} break;
 		
-		case "btn_delete" :
-		{
+		case "btn_delete": {
 		    $textUserSubs = "Выберите номер подписки: \n" . getAllUserSubs($peer_id, $mysqli, $daysOfWeek, $timesOfDay);
             $vk->sendMessage($peer_id, $textUserSubs);
 		    $mysqli->query("UPDATE `users` SET `action` = 'delete' WHERE `users`.`idUser` = '".$peer_id."'");
-		}break;
+		} break;
 		
-		case "btn_trot":
-		{
-			switch($action)
-			{
-				case "subscribe":
-				{
+		case "btn_trot": {
+			switch ($action) {
+				case "subscribe": {
 					$vk->sendButton($peer_id, "Выберите путь", [[$btn_path_2, $btn_path_3, $btn_path_4, $btn_path_5, $btn_path_6], [$btn_path_7, $btn_path_8, $btn_path_9, $btn_path_10, $btn_path_11], [$btn_back_trot_sub]]);
-				}break;
-				case "status":
-				{
+				} break;
+				case "status": {
 					$vk->sendButton($peer_id, "Выберите путь", [[$btn_path_2, $btn_path_3, $btn_path_4, $btn_path_5, $btn_path_6], [$btn_path_7, $btn_path_8, $btn_path_9, $btn_path_10, $btn_path_11], [$btn_back_trot_status]]);
-				}break;
-				default:
-				{
+				} break;
+				default: {
 					$vk->sendButton($peer_id, "Выберите путь", [[$btn_path_2, $btn_path_3, $btn_path_4, $btn_path_5, $btn_path_6], [$btn_path_7, $btn_path_8, $btn_path_9, $btn_path_10, $btn_path_11], [$btn_back]]);
-				}break;
+				} break;
 			}
 			$mysqli->query("UPDATE `users` SET `path` = 'trot' WHERE `users`.`idUser` = '".$peer_id."'");
 		}break;
 		
-		case "btn_trob":
-		{
-			switch($action)
-			{
-				case "subscribe":
-				{
+		case "btn_trob": {
+			switch ($action) {
+				case "subscribe": {
 					$vk->sendButton($peer_id, "Выберите путь", [[$btn_path_1, $btn_path_2, $btn_path_2a, $btn_path_3], [$btn_path_4, $btn_path_5, $btn_path_7, $btn_path_10], [$btn_path_11, $btn_path_15, $btn_path_16], [$btn_back_trob_sub]]);
-				}break;
-				case "status":
-				{
+				} break;
+				case "status": {
 					$vk->sendButton($peer_id, "Выберите путь", [[$btn_path_1, $btn_path_2, $btn_path_2a, $btn_path_3], [$btn_path_4, $btn_path_5, $btn_path_7, $btn_path_10], [$btn_path_11, $btn_path_15, $btn_path_16], [$btn_back_trob_status]]);
-				}break;
-				default:
-				{
+				} break;
+				default: {
 					$vk->sendButton($peer_id, "Выберите путь", [[$btn_path_1, $btn_path_2, $btn_path_2a, $btn_path_3], [$btn_path_4, $btn_path_5, $btn_path_7, $btn_path_10], [$btn_path_11, $btn_path_15, $btn_path_16], [$btn_back]]);
-				}break;
+				} break;
 			}
 			$mysqli->query("UPDATE `users` SET `path` = 'trob' WHERE `users`.`idUser` = '".$peer_id."'");
-		}break;
+		} break;
 		
-		case "btn_unsub":
-		{
+		case "btn_unsub": {
 		    $vk->sendButton($peer_id, "Вы уверены?", [[$btn_no], [$btn_yes]]);
-		}break;
+		} break;
 		
-		case "btn_yes" : 
-		{
+		case "btn_yes": {
 		    $mysqli->query("DELETE FROM `users` WHERE `users`.`idUser` = " . $peer_id);
 			$mysqli->query("DELETE FROM `subscriptions` WHERE `subscriptions`.`idUser` = " . $peer_id);
 			$vk->sendButton($peer_id,"Для начала работы нажмите начать", [[$btn_start]]);
-		}break;
+		} break;
 		
-		case "btn_no" : 
-		{
+		case "btn_no": {
 		   $vk->sendButton($peer_id, "Выберите команду", [[$btn_sub], [$btn_status], [$btn_my_sub], [$btn_unsub]]);
 		   $mysqli->query("UPDATE `users` SET `action` = '', `path` = '', `day` = '', `number` = '' WHERE `users`.`idUser` = '".$peer_id."'");
-		}break;
+		} break;
 		
 		
-		case "btn_mon":
-		{
-			switch($action)
-			{
-				case "my_sub":
-				{
-                    $textUserSubs = getUserSubs($peer_id, $mysqli, 1, $daysOfWeek, $timesOfDay);
+		case "btn_mon": 
+		case "btn_tue": 
+		case "btn_wed": 
+		case "btn_thu": 
+		case "btn_fri": 
+		case "btn_sat": 
+		case "btn_sun": {
+			$numDay = $daysOfWeekPayload[$payload];
+			switch($action) {
+				case "my_sub": {
+					$textUserSubs = getUserSubs($peer_id, $mysqli, $numDay, $daysOfWeek, $timesOfDay);
                 	$vk->sendMessage($peer_id, $textUserSubs);
-				   
-	               
-				}break;
-				case "subscribe":
-				{
+				} break;
+				case "subscribe": {
 					$vk->sendButton($peer_id, "Выберите вид транспорта", [[$btn_trot], [$btn_trob], [$btn_back_day_sub]]);
-				}break;
-				default:
-				{
+				} break;
+				default: {
 					$vk->sendButton($peer_id, "Выберите вид транспорта", [[$btn_trot], [$btn_trob], [$btn_back]]);
-				}break;
+				} break;
 			}
-			$mysqli->query("UPDATE `users` SET `day` = '1' WHERE `users`.`idUser` = '".$peer_id."'");
-		}break;
+			$mysqli->query("UPDATE `users` SET `day` = '" . $numDay . "' WHERE `users`.`idUser` = '".$peer_id."'");
+		} break;
 		
-		case "btn_tue":
-		{
-			switch($action)
-			{
-				case "my_sub":
-				{
-					$textUserSubs = getUserSubs($peer_id, $mysqli, 2, $daysOfWeek, $timesOfDay);
-                	$vk->sendMessage($peer_id, $textUserSubs);
-				}break;
-				case "subscribe":
-				{
-					$vk->sendButton($peer_id, "Выберите вид транспорта", [[$btn_trot], [$btn_trob], [$btn_back_day_sub]]);
-				}break;
-				default:
-				{
-					$vk->sendButton($peer_id, "Выберите вид транспорта", [[$btn_trot], [$btn_trob], [$btn_back]]);
-				}break;
-			}
-			$mysqli->query("UPDATE `users` SET `day` = '2' WHERE `users`.`idUser` = '".$peer_id."'");
-		}break;
-		
-		case "btn_wed":
-		{
-			switch($action)
-			{
-				case "my_sub":
-				{
-				    $textUserSubs = getUserSubs($peer_id, $mysqli, 3, $daysOfWeek, $timesOfDay);
-                	$vk->sendMessage($peer_id, $textUserSubs);
-				}break;
-				case "subscribe":
-				{
-					$vk->sendButton($peer_id, "Выберите вид транспорта", [[$btn_trot], [$btn_trob], [$btn_back_day_sub]]);
-				}break;
-				default:
-				{
-					$vk->sendButton($peer_id, "Выберите вид транспорта", [[$btn_trot], [$btn_trob], [$btn_back]]);
-				}break;
-			}
-			$mysqli->query("UPDATE `users` SET `day` = '3' WHERE `users`.`idUser` = '".$peer_id."'");
-		}break;
-		
-		case "btn_thu":
-		{
-			switch($action)
-			{
-				case "my_sub":
-				{
-					$textUserSubs = getUserSubs($peer_id, $mysqli, 4, $daysOfWeek, $timesOfDay);
-                	$vk->sendMessage($peer_id, $textUserSubs);
-				}break;
-				case "subscribe":
-				{
-					$vk->sendButton($peer_id, "Выберите вид транспорта", [[$btn_trot], [$btn_trob], [$btn_back_day_sub]]);
-				}break;
-				default:
-				{
-					$vk->sendButton($peer_id, "Выберите вид транспорта", [[$btn_trot], [$btn_trob], [$btn_back]]);
-				}break;
-			}
-			$mysqli->query("UPDATE `users` SET `day` = '4' WHERE `users`.`idUser` = '".$peer_id."'");
-		}break;
-		
-		case "btn_fri":
-		{
-			switch($action)
-			{
-				case "my_sub":
-				{
-					$textUserSubs = getUserSubs($peer_id, $mysqli, 5, $daysOfWeek, $timesOfDay);
-                	$vk->sendMessage($peer_id, $textUserSubs);
-				}break;
-				case "subscribe":
-				{
-					$vk->sendButton($peer_id, "Выберите вид транспорта", [[$btn_trot], [$btn_trob], [$btn_back_day_sub]]);
-				}break;
-				default:
-				{
-					$vk->sendButton($peer_id, "Выберите вид транспорта", [[$btn_trot], [$btn_trob], [$btn_back]]);
-				}break;
-			}
-			$mysqli->query("UPDATE `users` SET `day` = '5' WHERE `users`.`idUser` = '".$peer_id."'");
-		}break;
-		
-		case "btn_sat":
-		{
-			switch($action)
-			{
-				case "my_sub":
-				{
-					$textUserSubs = getUserSubs($peer_id, $mysqli, 6, $daysOfWeek, $timesOfDay);
-                	$vk->sendMessage($peer_id, $textUserSubs);
-				}break;
-				case "subscribe":
-				{
-					$vk->sendButton($peer_id, "Выберите вид транспорта", [[$btn_trot], [$btn_trob], [$btn_back_day_sub]]);
-				}break;
-				default:
-				{
-					$vk->sendButton($peer_id, "Выберите вид транспорта", [[$btn_trot], [$btn_trob], [$btn_back]]);
-				}break;
-			}
-			$mysqli->query("UPDATE `users` SET `day` = '6' WHERE `users`.`idUser` = '".$peer_id."'");
-		}break;
-		
-		case "btn_sun":
-		{
-			switch($action)
-			{
-				case "my_sub":
-				{
-					$textUserSubs = getUserSubs($peer_id, $mysqli, 7, $daysOfWeek, $timesOfDay);
-                	$vk->sendMessage($peer_id, $textUserSubs);
-				}break;
-				case "subscribe":
-				{
-					$vk->sendButton($peer_id, "Выберите вид транспорта", [[$btn_trot], [$btn_trob], [$btn_back_day_sub]]);
-				}break;
-				default:
-				{
-					$vk->sendButton($peer_id, "Выберите вид транспорта", [[$btn_trot], [$btn_trob], [$btn_back]]);
-				}break;
-			}
-			$mysqli->query("UPDATE `users` SET `day` = '7' WHERE `users`.`idUser` = '".$peer_id."'");
-		}break;
-		
-		case "btn_back_sub":
-		{
+		case "btn_back_sub": 
+		case "btn_back_blue_sub": {
 			$vk->sendButton($peer_id, "Выберите команду", [[$btn_sub], [$btn_status], [$btn_my_sub], [$btn_unsub]]);
 			$mysqli->query("UPDATE `users` SET `action` = '' WHERE `users`.`idUser` = '".$peer_id."'");
-		}break;
+		} break;
 		
-		case "btn_back_blue_sub":
-		{
-			$vk->sendButton($peer_id, "Выберите команду", [[$btn_sub], [$btn_status], [$btn_my_sub], [$btn_unsub]]);
-			$mysqli->query("UPDATE `users` SET `action` = '' WHERE `users`.`idUser` = '".$peer_id."'");
-		}break;
-		
-		case "btn_back_day_sub":
-		{
+		case "btn_back_day_sub": {
 			$vk->sendButton($peer_id, "Выберите день недели", [[$btn_mon, $btn_tue, $btn_wed], [$btn_thu, $btn_fri], [$btn_sat, $btn_sun], [$btn_back_sub]]);
 			$mysqli->query("UPDATE `users` SET `day` = '', `number` = '0' WHERE `users`.`idUser` = '".$peer_id."'");
-		}break;
+		} break;
 		
-		case "btn_back_trob_sub":
-		{
+		case "btn_back_trob_sub": {
 			$vk->sendButton($peer_id, "Выберите вид транспорта", [[$btn_trot], [$btn_trob], [$btn_back]]);
 			$mysqli->query("UPDATE `users` SET `number` = '0' WHERE `users`.`idUser` = '".$peer_id."'");
-		}break;
+		} break;
 		
-		case "btn_back_trot_sub":
-		{
+		case "btn_back_trot_sub": {
 			$vk->sendButton($peer_id, "Выберите вид транспорта", [[$btn_trot], [$btn_trob], [$btn_back_day_sub]]);
 			$mysqli->query("UPDATE `users` SET `number` = '0' WHERE `users`.`idUser` = '".$peer_id."'");
-		}break;
+		} break;
 		
-		case "btn_back_status":
-		{
+		case "btn_back_trol_sub_num": {
+			$vk->sendButton($peer_id, "Выберите путь", [[$btn_path_1, $btn_path_2, $btn_path_2a, $btn_path_3], [$btn_path_4, $btn_path_5, $btn_path_7, $btn_path_10], [$btn_path_11, $btn_path_15, $btn_path_16], [$btn_back_trob_sub]]);
+			$mysqli->query("UPDATE `users` SET `number` = '0' WHERE `users`.`idUser` = '".$peer_id."'");
+		} break;
+		
+		case "btn_back_tram_sub_num": {
+			$vk->sendButton($peer_id, "Выберите путь", [[$btn_path_2, $btn_path_3, $btn_path_4, $btn_path_5, $btn_path_6], [$btn_path_7, $btn_path_8, $btn_path_9, $btn_path_10, $btn_path_11], [$btn_back_trot_sub]]);
+			$mysqli->query("UPDATE `users` SET `number` = '0' WHERE `users`.`idUser` = '".$peer_id."'");
+		} break;
+		
+		case "btn_back_status": {
 			$vk->sendButton($peer_id, "Выберите команду", [[$btn_sub], [$btn_status], [$btn_my_sub], [$btn_unsub]]);
 			$mysqli->query("UPDATE `users` SET `action` = '' WHERE `users`.`idUser` = '".$peer_id."'");
-		}break;
-		//ъеъ
-		case "btn_back_trob_status":
-		{
+		} break;
+		
+		case "btn_back_trob_status": 
+		case "btn_back_trot_status": {
 			$vk->sendButton($peer_id, "Выберите вид транспорта", [[$btn_trot], [$btn_trob], [$btn_back_status]]);
 			$mysqli->query("UPDATE `users` SET `path` = '' WHERE `users`.`idUser` = '".$peer_id."'");
-		}break;
+		} break;
 		
-		case "btn_back_trot_status":
-		{
-			$vk->sendButton($peer_id, "Выберите вид транспорта", [[$btn_trot], [$btn_trob], [$btn_back_status]]);
-			$mysqli->query("UPDATE `users` SET `path` = '' WHERE `users`.`idUser` = '".$peer_id."'");
-		}break;
-		
-		case "btn_back_my_sub":
-		{
+		case "btn_back_my_sub": {
 			$vk->sendButton($peer_id, "Выберите команду", [[$btn_show_me], [$btn_delete], [$btn_back_blue_sub]]);
 			$mysqli->query("UPDATE `users` SET `action` = '' WHERE `users`.`idUser` = '".$peer_id."'");
-		}break;
+		} break;
 		
-		case "btn_back_show" :
-		{
+		case "btn_back_show": {
 		    $vk->sendButton($peer_id, "Выберите команду", [[$btn_show_all], [$btn_choose_day], [$btn_back_my_sub]]);
 			$mysqli->query("UPDATE `users` SET `action` = '' WHERE `users`.`idUser` = '".$peer_id."'");
-		}break;
+		} break;
 		
-		case "btn_back":
-		{
+		case "btn_back": {
 			$vk->sendButton($peer_id, "Выберите команду", [[$btn_sub], [$btn_status], [$btn_my_sub], [$btn_unsub]]);
 			$mysqli->query("UPDATE `users` SET `action` = '', `path` = '', `day` = '', `number` = '' WHERE `users`.`idUser` = '".$peer_id."'");
-		}break;
+		} break;
 		
 		
 		case "btn_path_1":
-		{
-			switch ($action)
-			{
-				case "subscribe":
-				{
-					$vk->sendMessage($peer_id, $timeUser);
-                    $mysqli->query("UPDATE `users` SET `number` = '1' WHERE `users`.`idUser` = '".$peer_id."'");
-				}break;
-				case "status":
-				{
-				    //получаем статус - 1 если ходит и 0 если не ходит
-				    $response = $mysqli->query("SELECT `Status` FROM `transport` WHERE `TypeTransport` = 'Trolley' AND `NumberTransport` = '1'");
-				    $statusTransport = mysqli_fetch_assoc($response);
-				    $statusTransport = $statusTransport["Status"];
-				    
-				    //текст поста, если транспорт ходит, то выводить текст не надо
-				    $response = $mysqli->query("SELECT `TextPost` FROM `transport` WHERE `TypeTransport` = 'Trolley' AND `NumberTransport` = '1'");
-                    $textTransport = mysqli_fetch_assoc($response);
-                    $textTransport = $textTransport["TextPost"];
-                    
-                    //выводим информацию пользователю
-                    if ($statusTransport == 1) {
-                        $vk->sendMessage($peer_id, "Движение троллейбуса №1 не прервано");
-                    }
-                    else {
-                        $vk->sendMessage($peer_id, $textTransport);
-                    }
-					
-				}break;
-				default:
-				{
-					$vk->sendMessage($peer_id, "1-й треллейбус");
-				}break;
-			}
-		}break;
-		
-		case "btn_path_2":
-		{
-			switch($path)
-			{
-				case "trot":
-				{
-					switch ($action)
-					{
-						case "subscribe":
-						{
-							$vk->sendMessage($peer_id, $timeUser);
-                            $mysqli->query("UPDATE `users` SET `number` = '2' WHERE `users`.`idUser` = '".$peer_id."'");
-						}break;
-						case "status":
-						{
-						    //получаем статус - 1 если ходит и 0 если не ходит
-        				    $response = $mysqli->query("SELECT `Status` FROM `transport` WHERE `TypeTransport` = 'Tram' AND `NumberTransport` = '2'");
-        				    $statusTransport = mysqli_fetch_assoc($response);
-        				    $statusTransport = $statusTransport["Status"];
-        				    
-        				    //текст поста, если транспорт ходит, то выводить текст не надо
-        				    $response = $mysqli->query("SELECT `TextPost` FROM `transport` WHERE `TypeTransport` = 'Tram' AND `NumberTransport` = '2'");
-                            $textTransport = mysqli_fetch_assoc($response);
-                            $textTransport = $textTransport["TextPost"];
-                            
-							//выводим информацию пользователю
-                            if ($statusTransport == 1) {
-                                $vk->sendMessage($peer_id, "Движение трамвая №2 не прервано");
-                            }
-                            else {
-                                $vk->sendMessage($peer_id, $textTransport);
-                            }
-						}break;
-						default:
-						{
-							$vk->sendMessage($peer_id, "2-й трамвай");
-						}break;
-					}
-				}break;
-				case "trob":
-				{
-					switch ($action)
-					{
-						case "subscribe":
-						{
-							$vk->sendMessage($peer_id, $timeUser);
-                            $mysqli->query("UPDATE `users` SET `number` = '2' WHERE `users`.`idUser` = '".$peer_id."'");
-						}break;
-						case "status":
-						{
-						    //получаем статус - 1 если ходит и 0 если не ходит
-        				    $response = $mysqli->query("SELECT `Status` FROM `transport` WHERE `TypeTransport` = 'Trolley' AND `NumberTransport` = '2'");
-        				    $statusTransport = mysqli_fetch_assoc($response);
-        				    $statusTransport = $statusTransport["Status"];
-        				    
-        				    //текст поста, если транспорт ходит, то выводить текст не надо
-        				    $response = $mysqli->query("SELECT `TextPost` FROM `transport` WHERE `TypeTransport` = 'Trolley' AND `NumberTransport` = '2'");
-                            $textTransport = mysqli_fetch_assoc($response);
-                            $textTransport = $textTransport["TextPost"];
-							//выводим информацию пользователю
-                            if ($statusTransport == 1) {
-                                $vk->sendMessage($peer_id, "Движение троллейбуса №2 не прервано");
-                            }
-                            else {
-                                $vk->sendMessage($peer_id, $textTransport);
-                            }
-						}break;
-						default:
-						{
-							$vk->sendMessage($peer_id, "2-й треллейбус");
-						}break;
-					}
-				}break;
-				default:
-				{
-					$vk->sendMessage($peer_id, $action." ".$path);
-				}break;
-			}
-		}break;
-		
+		case "btn_path_2": 
 		case "btn_path_2a":
-		{
-			switch ($action)
-			{
-				case "subscribe":
-				{
-					$vk->sendMessage($peer_id, $timeUser);
-                    $mysqli->query("UPDATE `users` SET `number` = '20' WHERE `users`.`idUser` = '".$peer_id."'");
-				}break;
-				case "status":
-				{
-				    //получаем статус - 1 если ходит и 0 если не ходит
-				    $response = $mysqli->query("SELECT `Status` FROM `transport` WHERE `TypeTransport` = 'Trolley' AND `NumberTransport` = '20'");
-				    $statusTransport = mysqli_fetch_assoc($response);
-				    $statusTransport = $statusTransport["Status"];
-				    
-				    //текст поста, если транспорт ходит, то выводить текст не надо
-				    $response = $mysqli->query("SELECT `TextPost` FROM `transport` WHERE `TypeTransport` = 'Trolley' AND `NumberTransport` = '20'");
-                    $textTransport = mysqli_fetch_assoc($response);
-                    $textTransport = $textTransport["TextPost"];
-                    
-					//выводим информацию пользователю
-                    if ($statusTransport == 1) {
-                        $vk->sendMessage($peer_id, "Движение троллейбуса №2а не прервано");
-                    }
-                    else {
-                        $vk->sendMessage($peer_id, $textTransport);
-                    }
-				}break;
-				default:
-				{
-					$vk->sendMessage($peer_id, "2а-й треллейбус");
-				}break;
-			}
-		}break;
-		
 		case "btn_path_3":
-		{
-			switch($path)
-			{
-				case "trot":
-				{
-					switch ($action)
-					{
-						case "subscribe":
-						{
-							$vk->sendMessage($peer_id, $timeUser);
-                            $mysqli->query("UPDATE `users` SET `number` = '3' WHERE `users`.`idUser` = '".$peer_id."'");
-						}break;
-						case "status":
-						{
-						    //получаем статус - 1 если ходит и 0 если не ходит
-        				    $response = $mysqli->query("SELECT `Status` FROM `transport` WHERE `TypeTransport` = 'Tram' AND `NumberTransport` = '3'");
-        				    $statusTransport = mysqli_fetch_assoc($response);
-        				    $statusTransport = $statusTransport["Status"];
-        				    
-        				    //текст поста, если транспорт ходит, то выводить текст не надо
-        				    $response = $mysqli->query("SELECT `TextPost` FROM `transport` WHERE `TypeTransport` = 'Tram' AND `NumberTransport` = '3'");
-                            $textTransport = mysqli_fetch_assoc($response);
-                            $textTransport = $textTransport["TextPost"];
-                            
-							//выводим информацию пользователю
-                            if ($statusTransport == 1) {
-                                $vk->sendMessage($peer_id, "Движение трамвая №3 не прервано");
-                            }
-                            else {
-                                $vk->sendMessage($peer_id, $textTransport);
-                            }
-						}break;
-						default:
-						{
-							$vk->sendMessage($peer_id, "3-й трамвай");
-						}break;
-					}
-				}break;
-				case "trob":
-				{
-					switch ($action)
-					{
-						case "subscribe":
-						{
-							$vk->sendMessage($peer_id, $timeUser);
-                            $mysqli->query("UPDATE `users` SET `number` = '3' WHERE `users`.`idUser` = '".$peer_id."'");
-						}break;
-						case "status":
-						{
-						    //получаем статус - 1 если ходит и 0 если не ходит
-        				    $response = $mysqli->query("SELECT `Status` FROM `transport` WHERE `TypeTransport` = 'Trolley' AND `NumberTransport` = '3'");
-        				    $statusTransport = mysqli_fetch_assoc($response);
-        				    $statusTransport = $statusTransport["Status"];
-        				    
-        				    //текст поста, если транспорт ходит, то выводить текст не надо
-        				    $response = $mysqli->query("SELECT `TextPost` FROM `transport` WHERE `TypeTransport` = 'Trolley' AND `NumberTransport` = '3'");
-                            $textTransport = mysqli_fetch_assoc($response);
-                            $textTransport = $textTransport["TextPost"];
-                            
-							//выводим информацию пользователю
-                            if ($statusTransport == 1) {
-                                $vk->sendMessage($peer_id, "Движение троллейбуса №3 не прервано");
-                            }
-                            else {
-                                $vk->sendMessage($peer_id, $textTransport);
-                            }
-						}break;
-						default:
-						{
-							$vk->sendMessage($peer_id, "3-й треллейбус");
-						}break;
-					}
-				}break;
-				default:
-				{
-					$vk->sendMessage($peer_id, "3-й номер транспорта");
-				}break;
-			}
-		}break;
-		
 		case "btn_path_4":
-		{
-			switch($path)
-			{
-				case "trot":
-				{
-					switch ($action)
-					{
-						case "subscribe":
-						{
-							$vk->sendMessage($peer_id, $timeUser);
-                            $mysqli->query("UPDATE `users` SET `number` = '4' WHERE `users`.`idUser` = '".$peer_id."'");
-						}break;
-						case "status":
-						{
-						    //получаем статус - 1 если ходит и 0 если не ходит
-        				    $response = $mysqli->query("SELECT `Status` FROM `transport` WHERE `TypeTransport` = 'Tram' AND `NumberTransport` = '4'");
-        				    $statusTransport = mysqli_fetch_assoc($response);
-        				    $statusTransport = $statusTransport["Status"];
-        				    
-        				    //текст поста, если транспорт ходит, то выводить текст не надо
-        				    $response = $mysqli->query("SELECT `TextPost` FROM `transport` WHERE `TypeTransport` = 'Tram' AND `NumberTransport` = '4'");
-                            $textTransport = mysqli_fetch_assoc($response);
-                            $textTransport = $textTransport["TextPost"];
-                            
-							//выводим информацию пользователю
-                            if ($statusTransport == 1) {
-                                $vk->sendMessage($peer_id, "Движение трамвая №4 не прервано");
-                            }
-                            else {
-                                $vk->sendMessage($peer_id, $textTransport);
-                            }
-						}break;
-						default:
-						{
-							$vk->sendMessage($peer_id, "4-й трамвай");
-						}break;
-					}
-				}break;
-				case "trob":
-				{
-					switch ($action)
-					{
-						case "subscribe":
-						{
-							$vk->sendMessage($peer_id, $timeUser);
-                            $mysqli->query("UPDATE `users` SET `number` = '4' WHERE `users`.`idUser` = '".$peer_id."'");
-						}break;
-						case "status":
-						{
-						    //получаем статус - 1 если ходит и 0 если не ходит
-        				    $response = $mysqli->query("SELECT `Status` FROM `transport` WHERE `TypeTransport` = 'Trolley' AND `NumberTransport` = '4'");
-        				    $statusTransport = mysqli_fetch_assoc($response);
-        				    $statusTransport = $statusTransport["Status"];
-        				    
-        				    //текст поста, если транспорт ходит, то выводить текст не надо
-        				    $response = $mysqli->query("SELECT `TextPost` FROM `transport` WHERE `TypeTransport` = 'Trolley' AND `NumberTransport` = '4'");
-                            $textTransport = mysqli_fetch_assoc($response);
-                            $textTransport = $textTransport["TextPost"];
-                            
-							//выводим информацию пользователю
-                            if ($statusTransport == 1) {
-                                $vk->sendMessage($peer_id, "Движение трамвая №4 не прервано");
-                            }
-                            else {
-                                $vk->sendMessage($peer_id, $textTransport);
-                            }
-						}break;
-						default:
-						{
-							$vk->sendMessage($peer_id, "4-й треллейбус");
-						}break;
-					}
-				}break;
-				default:
-				{
-					$vk->sendMessage($peer_id, "4-й номер транспорта");
-				}break;
-			}
-		}break;
-		
 		case "btn_path_5":
-		{
-			switch($path)
-			{
-				case "trot":
-				{
-					switch ($action)
-					{
-						case "subscribe":
-						{
-							$vk->sendMessage($peer_id, $timeUser);
-                            $mysqli->query("UPDATE `users` SET `number` = '5' WHERE `users`.`idUser` = '".$peer_id."'");
-						}break;
-						case "status":
-						{
-						    //получаем статус - 1 если ходит и 0 если не ходит
-        				    $response = $mysqli->query("SELECT `Status` FROM `transport` WHERE `TypeTransport` = 'Tram' AND `NumberTransport` = '5'");
-        				    $statusTransport = mysqli_fetch_assoc($response);
-        				    $statusTransport = $statusTransport["Status"];
-        				    
-        				    //текст поста, если транспорт ходит, то выводить текст не надо
-        				    $response = $mysqli->query("SELECT `TextPost` FROM `transport` WHERE `TypeTransport` = 'Tram' AND `NumberTransport` = '5'");
-                            $textTransport = mysqli_fetch_assoc($response);
-                            $textTransport = $textTransport["TextPost"];
-                            
-							//выводим информацию пользователю
-                            if ($statusTransport == 1) {
-                                $vk->sendMessage($peer_id, "Движение трамвая №5 не прервано");
-                            }
-                            else {
-                                $vk->sendMessage($peer_id, $textTransport);
-                            }
-						}break;
-						default:
-						{
-							$vk->sendMessage($peer_id, "5-й трамвай");
-						}break;
-					}
-				}break;
-				case "trob":
-				{
-					switch ($action)
-					{
-						case "subscribe":
-						{
-							$vk->sendMessage($peer_id, $timeUser);
-                            $mysqli->query("UPDATE `users` SET `number` = '5' WHERE `users`.`idUser` = '".$peer_id."'");
-						}break;
-						case "status":
-						{
-						    //получаем статус - 1 если ходит и 0 если не ходит
-        				    $response = $mysqli->query("SELECT `Status` FROM `transport` WHERE `TypeTransport` = 'Trolley' AND `NumberTransport` = '5'");
-        				    $statusTransport = mysqli_fetch_assoc($response);
-        				    $statusTransport = $statusTransport["Status"];
-        				    
-        				    //текст поста, если транспорт ходит, то выводить текст не надо
-        				    $response = $mysqli->query("SELECT `TextPost` FROM `transport` WHERE `TypeTransport` = 'Trolley' AND `NumberTransport` = '5'");
-                            $textTransport = mysqli_fetch_assoc($response);
-                            $textTransport = $textTransport["TextPost"];
-                            
-							//выводим информацию пользователю
-                            if ($statusTransport == 1) {
-                                $vk->sendMessage($peer_id, "Движение троллейбуса №5 не прервано");
-                            }
-                            else {
-                                $vk->sendMessage($peer_id, $textTransport);
-                            }
-						}break;
-						default:
-						{
-							$vk->sendMessage($peer_id, "5-й треллейбус");
-						}break;
-					}
-				}break;
-				default:
-				{
-					$vk->sendMessage($peer_id, "5-й номер транспорта");
-				}break;
-			}
-		}break;
-		
 		case "btn_path_6":
-		{
-			switch ($action)
-			{
-				case "subscribe":
-				{
-					$vk->sendMessage($peer_id, $timeUser);
-                    $mysqli->query("UPDATE `users` SET `number` = '6' WHERE `users`.`idUser` = '".$peer_id."'");
-				}break;
-				case "status":
-				{
-				    //получаем статус - 1 если ходит и 0 если не ходит
-				    $response = $mysqli->query("SELECT `Status` FROM `transport` WHERE `TypeTransport` = 'Tram' AND `NumberTransport` = '6'");
-				    $statusTransport = mysqli_fetch_assoc($response);
-				    $statusTransport = $statusTransport["Status"];
-				    
-				    //текст поста, если транспорт ходит, то выводить текст не надо
-				    $response = $mysqli->query("SELECT `TextPost` FROM `transport` WHERE `TypeTransport` = 'Tram' AND `NumberTransport` = '6'");
-                    $textTransport = mysqli_fetch_assoc($response);
-                    $textTransport = $textTransport["TextPost"];
-                    
-					//выводим информацию пользователю
-                    if ($statusTransport == 1) {
-                        $vk->sendMessage($peer_id, "Движение трамвая №6 не прервано");
-                    }
-                    else {
-                        $vk->sendMessage($peer_id, $textTransport);
-                    }
-				}break;
-				default:
-				{
-					$vk->sendMessage($peer_id, "6-й трамвай");
-				}break;
-			}
-		}break;
-		
 		case "btn_path_7":
-		{
-			switch($path)
-			{
-				case "trot":
-				{
-					switch ($action)
-					{
-						case "subscribe":
-						{
-							$vk->sendMessage($peer_id, $timeUser);
-                            $mysqli->query("UPDATE `users` SET `number` = '7' WHERE `users`.`idUser` = '".$peer_id."'");
-						}break;
-						case "status":
-						{
-						    //получаем статус - 1 если ходит и 0 если не ходит
-        				    $response = $mysqli->query("SELECT `Status` FROM `transport` WHERE `TypeTransport` = 'Tram' AND `NumberTransport` = '7'");
-        				    $statusTransport = mysqli_fetch_assoc($response);
-        				    $statusTransport = $statusTransport["Status"];
-        				    
-        				    //текст поста, если транспорт ходит, то выводить текст не надо
-        				    $response = $mysqli->query("SELECT `TextPost` FROM `transport` WHERE `TypeTransport` = 'Tram' AND `NumberTransport` = '7'");
-                            $textTransport = mysqli_fetch_assoc($response);
-                            $textTransport = $textTransport["TextPost"];
-                            
-							//выводим информацию пользователю
-                            if ($statusTransport == 1) {
-                                $vk->sendMessage($peer_id, "Движение трамвая №7 не прервано");
-                            }
-                            else {
-                                $vk->sendMessage($peer_id, $textTransport);
-                            }
-						}break;
-						default:
-						{
-							$vk->sendMessage($peer_id, "7-й трамвай");
-						}break;
-					}
-				}break;
-				case "trob":
-				{
-					switch ($action)
-					{
-						case "subscribe":
-						{
-							$vk->sendMessage($peer_id, $timeUser);
-                            $mysqli->query("UPDATE `users` SET `number` = '7' WHERE `users`.`idUser` = '".$peer_id."'");
-						}break;
-						case "status":
-						{
-						    //получаем статус - 1 если ходит и 0 если не ходит
-        				    $response = $mysqli->query("SELECT `Status` FROM `transport` WHERE `TypeTransport` = 'Trolley' AND `NumberTransport` = '7'");
-        				    $statusTransport = mysqli_fetch_assoc($response);
-        				    $statusTransport = $statusTransport["Status"];
-        				    
-        				    //текст поста, если транспорт ходит, то выводить текст не надо
-        				    $response = $mysqli->query("SELECT `TextPost` FROM `transport` WHERE `TypeTransport` = 'Trolley' AND `NumberTransport` = '7'");
-                            $textTransport = mysqli_fetch_assoc($response);
-                            $textTransport = $textTransport["TextPost"];
-                            
-							//выводим информацию пользователю
-                            if ($statusTransport == 1) {
-                                $vk->sendMessage($peer_id, "Движение троллейбуса №7 не прервано");
-                            }
-                            else {
-                                $vk->sendMessage($peer_id, $textTransport);
-                            }
-						}break;
-						default:
-						{
-							$vk->sendMessage($peer_id, "7-й треллейбус");
-						}break;
-					}
-				}break;
-				default:
-				{
-					$vk->sendMessage($peer_id, "7-й номер транспорта");
-				}break;
-			}
-		}break;
-		
 		case "btn_path_8":
-		{
-			switch ($action)
-			{
-				case "subscribe":
-				{
-					$vk->sendMessage($peer_id, $timeUser);
-                    $mysqli->query("UPDATE `users` SET `number` = '8' WHERE `users`.`idUser` = '".$peer_id."'");
-				}break;
-				case "status":
-				{
-				    //получаем статус - 1 если ходит и 0 если не ходит
-				    $response = $mysqli->query("SELECT `Status` FROM `transport` WHERE `TypeTransport` = 'Tram' AND `NumberTransport` = '8'");
-				    $statusTransport = mysqli_fetch_assoc($response);
-				    $statusTransport = $statusTransport["Status"];
-				    
-				    //текст поста, если транспорт ходит, то выводить текст не надо
-				    $response = $mysqli->query("SELECT `TextPost` FROM `transport` WHERE `TypeTransport` = 'Tram' AND `NumberTransport` = '8'");
-                    $textTransport = mysqli_fetch_assoc($response);
-                    $textTransport = $textTransport["TextPost"];
-                    
-					//выводим информацию пользователю
-                    if ($statusTransport == 1) {
-                        $vk->sendMessage($peer_id, "Движение трамвая №8 не прервано");
-                    }
-                    else {
-                        $vk->sendMessage($peer_id, $textTransport);
-                    }
-				}break;
-				default:
-				{
-				    $vk->sendMessage($peer_id, "8-й трамвай");
-				}break;
-			}
-		}break;
-		
 		case "btn_path_9":
-		{
-			switch ($action)
-			{
-				case "subscribe":
-				{
-					$vk->sendMessage($peer_id, $timeUser);
-                    $mysqli->query("UPDATE `users` SET `number` = '9' WHERE `users`.`idUser` = '".$peer_id."'");
-				}break;
-				case "status":
-				{
-				    //получаем статус - 1 если ходит и 0 если не ходит
-				    $response = $mysqli->query("SELECT `Status` FROM `transport` WHERE `TypeTransport` = 'Tram' AND `NumberTransport` = '9'");
-				    $statusTransport = mysqli_fetch_assoc($response);
-				    $statusTransport = $statusTransport["Status"];
-				    
-				    //текст поста, если транспорт ходит, то выводить текст не надо
-				    $response = $mysqli->query("SELECT `TextPost` FROM `transport` WHERE `TypeTransport` = 'Tram' AND `NumberTransport` = '9'");
-                    $textTransport = mysqli_fetch_assoc($response);
-                    $textTransport = $textTransport["TextPost"];
-                    
-					//выводим информацию пользователю
-                    if ($statusTransport == 1) {
-                        $vk->sendMessage($peer_id, "Движение трамвая №9 не прервано");
-                    }
-                    else {
-                        $vk->sendMessage($peer_id, $textTransport);
-                    }
-				}break;
-				default:
-				{
-					$vk->sendMessage($peer_id, "9-й трамвай");
-				}break;
-			}
-		}break;
-		
 		case "btn_path_10":
-		{
-			switch($path)
-			{
-				case "trot":
-				{
-					switch ($action)
-					{
-						case "subscribe":
-						{
-							$vk->sendMessage($peer_id, $timeUser);
-                            $mysqli->query("UPDATE `users` SET `number` = '10' WHERE `users`.`idUser` = '".$peer_id."'");
-						}break;
-						case "status":
-						{
+		case "btn_path_11": 
+		case "btn_path_15": 
+		case "btn_path_16": {
+			$pathNum = $pathPayload[$payload];
+			switch($path) {
+				case "trot": {
+					switch ($action) {
+						case "subscribe": {
+							$vk->sendButton($peer_id, "Выберите время", $btns_times_tram);
+                            $mysqli->query("UPDATE `users` SET `number` = '" . $pathNum . "' WHERE `users`.`idUser` = '".$peer_id."'");
+						} break;
+						case "status": {
 						    //получаем статус - 1 если ходит и 0 если не ходит
-        				    $response = $mysqli->query("SELECT `Status` FROM `transport` WHERE `TypeTransport` = 'Tram' AND `NumberTransport` = '10'");
+        				    $response = $mysqli->query("SELECT `Status` FROM `transport` WHERE `TypeTransport` = 'Tram' AND `NumberTransport` = '" . $pathNum . "'");
         				    $statusTransport = mysqli_fetch_assoc($response);
         				    $statusTransport = $statusTransport["Status"];
         				    
-        				    //текст поста, если транспорт ходит, то выводить текст не надо
-        				    $response = $mysqli->query("SELECT `TextPost` FROM `transport` WHERE `TypeTransport` = 'Tram' AND `NumberTransport` = '10'");
-                            $textTransport = mysqli_fetch_assoc($response);
-                            $textTransport = $textTransport["TextPost"];
-                            
-							
 							//выводим информацию пользователю
                             if ($statusTransport == 1) {
-                                $vk->sendMessage($peer_id, "Движение трамвая №10 не прервано");
+                                $vk->sendMessage($peer_id, "Движение трамвая №" . $pathNum . " не прервано");
                             }
                             else {
+								//текст поста, если транспорт ходит, то выводить текст не надо
+								$response = $mysqli->query("SELECT `TextPost` FROM `transport` WHERE `TypeTransport` = 'Tram' AND `NumberTransport` = '" . $pathNum . "'");
+								$textTransport = mysqli_fetch_assoc($response);
+								$textTransport = $textTransport["TextPost"];
                                 $vk->sendMessage($peer_id, $textTransport);
                             }
-						}break;
-						default:
-						{
-							$vk->sendMessage($peer_id, "10-й трамвай");
-						}break;
+						} break;
+						default: {
+							$vk->sendMessage($peer_id, $pathNum . "-й трамвай");
+						} break;
 					}
-				}break;
-				case "trob":
-				{
-					switch ($action)
-					{
-						case "subscribe":
-						{
-							$vk->sendMessage($peer_id, $timeUser);
-                            $mysqli->query("UPDATE `users` SET `number` = '10' WHERE `users`.`idUser` = '".$peer_id."'");
-						}break;
-						case "status":
-						{
+				} break;
+				case "trob": {
+					switch ($action) {
+						case "subscribe": {
+							$vk->sendButton($peer_id, "Выберите время", $btns_times_trol);
+                            $mysqli->query("UPDATE `users` SET `number` = '" . $pathNum . "' WHERE `users`.`idUser` = '".$peer_id."'");
+						} break;
+						case "status": {
 						    //получаем статус - 1 если ходит и 0 если не ходит
-        				    $response = $mysqli->query("SELECT `Status` FROM `transport` WHERE `TypeTransport` = 'Trolley' AND `NumberTransport` = '10'");
+        				    $response = $mysqli->query("SELECT `Status` FROM `transport` WHERE `TypeTransport` = 'Trolley' AND `NumberTransport` = '" . $pathNum . "'");
         				    $statusTransport = mysqli_fetch_assoc($response);
         				    $statusTransport = $statusTransport["Status"];
         				    
-        				    //текст поста, если транспорт ходит, то выводить текст не надо
-        				    $response = $mysqli->query("SELECT `TextPost` FROM `transport` WHERE `TypeTransport` = 'Trolley' AND `NumberTransport` = '10'");
-                            $textTransport = mysqli_fetch_assoc($response);
-                            $textTransport = $textTransport["TextPost"];
-						    
 							//выводим информацию пользователю
                             if ($statusTransport == 1) {
-                                $vk->sendMessage($peer_id, "Движение троллейбуса №10 не прервано");
+                                if ($pathNum == 20) { $pathNum = "2а"; }
+                                $vk->sendMessage($peer_id, "Движение троллейбуса №" . $pathNum . " не прервано");
                             }
                             else {
+								//текст поста, если транспорт ходит, то выводить текст не надо
+								$response = $mysqli->query("SELECT `TextPost` FROM `transport` WHERE `TypeTransport` = 'Trolley' AND `NumberTransport` = '" . $pathNum . "'");
+								$textTransport = mysqli_fetch_assoc($response);
+								$textTransport = $textTransport["TextPost"];
                                 $vk->sendMessage($peer_id, $textTransport);
                             }
-						}
+						} break;
+						default: {
+						    if ($pathNum == 20) { $pathNum = "2а"; }
+							$vk->sendMessage($peer_id, $pathNum . "-й треллейбус");
+						} break;
 					}
-				}break;
-				default:
-				{
-				    $vk->sendMessage($peer_id, "10-й треллейбус");
-				}break;
+				} break;
+				default: {
+					$vk->sendMessage($peer_id, $action." ".$path);
+				} break;
 			}
-		}break;
+		} break;
 		
-		case "btn_path_11":
-		{
-			switch($path)
-			{
-				case "trot":
-				{
-					switch ($action)
-					{
-						case "subscribe":
-						{
-							$vk->sendMessage($peer_id, $timeUser);
-                            $mysqli->query("UPDATE `users` SET `number` = '11' WHERE `users`.`idUser` = '".$peer_id."'");
-						}break;
-						case "status":
-						{
-						    //получаем статус - 1 если ходит и 0 если не ходит
-        				    $response = $mysqli->query("SELECT `Status` FROM `transport` WHERE `TypeTransport` = 'Tram' AND `NumberTransport` = '11'");
-        				    $statusTransport = mysqli_fetch_assoc($response);
-        				    $statusTransport = $statusTransport["Status"];
-        				    
-        				    //текст поста, если транспорт ходит, то выводить текст не надо
-        				    $response = $mysqli->query("SELECT `TextPost` FROM `transport` WHERE `TypeTransport` = 'Tram' AND `NumberTransport` = '11'");
-                            $textTransport = mysqli_fetch_assoc($response);
-                            $textTransport = $textTransport["TextPost"];
-                            
-							//выводим информацию пользователю
-                            if ($statusTransport == 1) {
-                                $vk->sendMessage($peer_id, "Движение трамвая №11 не прервано");
-                            }
-                            else {
-                                $vk->sendMessage($peer_id, $textTransport);
-                            }
-						}break;
-						default:
-						{
-							$vk->sendMessage($peer_id, "11-й трамвай");
-						}break;
-					}
-				}break;
-				case "trob":
-				{
-					switch ($action)
-					{
-						case "subscribe":
-						{
-							$vk->sendMessage($peer_id, $timeUser);
-                            $mysqli->query("UPDATE `users` SET `number` = '11' WHERE `users`.`idUser` = '".$peer_id."'");
-						}break;
-						case "status":
-						{
-						    //получаем статус - 1 если ходит и 0 если не ходит
-        				    $response = $mysqli->query("SELECT `Status` FROM `transport` WHERE `TypeTransport` = 'Trolley' AND `NumberTransport` = '11'");
-        				    $statusTransport = mysqli_fetch_assoc($response);
-        				    $statusTransport = $statusTransport["Status"];
-        				    
-        				    //текст поста, если транспорт ходит, то выводить текст не надо
-        				    $response = $mysqli->query("SELECT `TextPost` FROM `transport` WHERE `TypeTransport` = 'Trolley' AND `NumberTransport` = '11'");
-                            $textTransport = mysqli_fetch_assoc($response);
-                            $textTransport = $textTransport["TextPost"];
-                            
-							//выводим информацию пользователю
-                            if ($statusTransport == 1) {
-                                $vk->sendMessage($peer_id, "Движение троллейбуса №11 не прервано");
-                            }
-                            else {
-                                $vk->sendMessage($peer_id, $textTransport);
-                            }
-						}break;
-						default:
-						{
-							$vk->sendMessage($peer_id, "11-й треллейбус");
-						}break;
-					}
-				}break;
-				default:
-				{
-					$vk->sendMessage($peer_id, "11-й номер транспорта");
-				}break;
-			}
-		}break;
-		
-		case "btn_path_15":
-		{
-			switch ($action)
-			{
-				case "subscribe":
-				{
-					$vk->sendMessage($peer_id, $timeUser);
-                    $mysqli->query("UPDATE `users` SET `number` = '15' WHERE `users`.`idUser` = '".$peer_id."'");
-				}break;
-				case "status":
-				{
-				    //получаем статус - 1 если ходит и 0 если не ходит
-				    $response = $mysqli->query("SELECT `Status` FROM `transport` WHERE `TypeTransport` = 'Trolley' AND `NumberTransport` = '15'");
-				    $statusTransport = mysqli_fetch_assoc($response);
-				    $statusTransport = $statusTransport["Status"];
-				    
-				    //текст поста, если транспорт ходит, то выводить текст не надо
-				    $response = $mysqli->query("SELECT `TextPost` FROM `transport` WHERE `TypeTransport` = 'Trolley' AND `NumberTransport` = '15'");
-                    $textTransport = mysqli_fetch_assoc($response);
-                    $textTransport = $textTransport["TextPost"];
-                    
-					//выводим информацию пользователю
-                    if ($statusTransport == 1) {
-                        $vk->sendMessage($peer_id, "Движение троллейбуса №15 не прервано");
-                    }
-                    else {
-                        $vk->sendMessage($peer_id, $textTransport);
-                    }
-				}break;
-				default:
-				{
-					$vk->sendMessage($peer_id, "15-й треллейбус");
-				}break;
-			}
-		}break;
-		
-		case "btn_path_16":
-		{
-			switch ($action)
-			{
-				case "subscribe":
-				{
-					$vk->sendMessage($peer_id, $timeUser);
-                    $mysqli->query("UPDATE `users` SET `number` = '16' WHERE `users`.`idUser` = '".$peer_id."'");
-				}break;
-				case "status":
-				{
-				    //получаем статус - 1 если ходит и 0 если не ходит
-				    $response = $mysqli->query("SELECT `Status` FROM `transport` WHERE `TypeTransport` = 'Trolley' AND `NumberTransport` = '16'");
-				    $statusTransport = mysqli_fetch_assoc($response);
-				    $statusTransport = $statusTransport["Status"];
-				    
-				    //текст поста, если транспорт ходит, то выводить текст не надо
-				    $response = $mysqli->query("SELECT `TextPost` FROM `transport` WHERE `TypeTransport` = 'Trolley' AND `NumberTransport` = '16'");
-                    $textTransport = mysqli_fetch_assoc($response);
-                    $textTransport = $textTransport["TextPost"];
-                    
-					//выводим информацию пользователю
-                    if ($statusTransport == 1) {
-                        $vk->sendMessage($peer_id, "Движение троллейбуса №16 не прервано");
-                    }
-                    else {
-                        $vk->sendMessage($peer_id, $textTransport);
-                    }
-				}break;
-				default:
-				{
-					$vk->sendMessage($peer_id, "16-й треллейбус");
-				}break;
-			}
-		}break;
-		
-	    
-		default : 
-		{
+		default: {
 		    switch($action) {
 		    case "subscribe":{
-                if($messag >=1 && $messag <= 19) 
-                {
+				$messag = substr($messag, 0, 2) - 4;
+                if($messag >=1 && $messag <= 19) {
     		        $hour = $messag;
-    		        switch($path)
-                    {
-                        case "trot": 
-                        {
+    		        switch($path){
+                        case "trot": {
                             $idtime = $TRAMS[$number] * $ONETRANSPORT + ($day - 1) * $COUNTHOURS + $hour;
                         } break;
-                        case "trob": 
-                        {
+                        case "trob": {
                             $idtime = ($TROLLEYS[$number] + count($TRAMS)) * $ONETRANSPORT + ($day - 1) * $COUNTHOURS + $hour;
                         } break;
                     }
@@ -1369,25 +522,21 @@ if ($data->type == 'message_new') {
                     if (!$havePost) {
                         $Ido = $mysqli->query("INSERT INTO `subscriptions` (`id`, `idTime`, `idUser`)
                                         VALUES ('NULL', '" . $idtime . "', '" . $peer_id . "')");
-                        if ($Ido) 
-                        {
+                        if ($Ido) {
                             $vk->sendMessage($peer_id, "&#10004; Изменения сохранены ");
                         }
-                        else 
-                        {
+                        else {
                             $vk->sendMessage($peer_id, "&#10060; Ошибка! Изменения не сохранены ");
                         }
                     }
                     else {
                         $vk->sendMessage($peer_id, "&#10060; Ошибка! Вы уже подписаны на уведомления в данное время ");
-                    }
-                    
+                    } 
                 }
-                else 
-                {
+                else {
                     $vk->sendMessage($peer_id, "&#10060; Ошибка! Введены некорректные данные ");
                 }
-    		}break;
+    		} break;
     		
     		case "delete": {
     		    //получаем id времени подписок пользователя
@@ -1404,22 +553,29 @@ if ($data->type == 'message_new') {
                     $var = mysqli_fetch_assoc($response);
                     $flagDelete = $mysqli->query("DELETE FROM `subscriptions` WHERE `subscriptions`.`idUser` = '" . $peer_id . "' AND `idTime` = '" . $var["id"] . "'");
                     if ($flagDelete) {
-                        
+                        $txtUnsub = "&#10004; Подпиcка на уведомления по маршруту ";
+                        if ($var["type"] == "tram") $txtUnsub .= "Трамвай №";
+                        else $txtUnsub .= "Троллейбус №";
+                        $txtUnsub .= $var["number"] . " " . $daysOfWeek[$var["day"]] . " " . $timesOfDay[$var["time"]];
+                        $txtUnsub .= " успено отменена";
+                        $vk->sendMessage($peer_id, $txtUnsub);
+                        $txtUserSubs = "Ваши текущие подписки: \n" . getAllUserSubs($peer_id, $mysqli, $daysOfWeek, $timesOfDay);
+                        $vk->sendMessage($peer_id, $txtUserSubs);
                     }
                     else {
-                        //ошибка бд
+                        $vk->sendMessage($peer_id, "&#10060; Ошибка! Изменения не сохранены ");
                     }
                 }
                 else {
-                    //пользователь вве некорректные данные
+                    $vk->sendMessage($peer_id, "&#10060; Ошибка! Введены некорректные данные ");
                 }
-    		}break;
+    		} break;
     		
     		default: {
     		    $vk->sendMessage($peer_id, "&#10060; Ошибка! Введены некорректные данные ");
-    		}break;
+    		} break;
 		    }
-		}break;
+		} break;
 	}
 }
 

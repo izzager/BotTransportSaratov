@@ -3,38 +3,31 @@
 function getTrolleys($trollText) {
     $trolleys = [];
     $keyNum = 0;
-    $c = strpos($trollText,"№1,") || strpos($trollText," 1 ") || strpos($trollText," 1,");
-    if ($c !== false) {
+    if (strpos($trollText,"№1,") !== false || strpos($trollText," 1 ") !== false || strpos($trollText," 1,") !== false) {
         $trolleys[$keyNum] = 1;
         $keyNum++;
     }
-    $c = strpos($trollText,"2а");
-    if ($c !== false) {
+    if (strpos($trollText,"№2а,") !== false || strpos($trollText," 2а") !== false || strpos($trollText," 2а,") !== false) {
         $trolleys[$keyNum] = 20;
         $keyNum++;
     }
-    $c = strpos($trollText,"2");
-    if ($c !== false) {
+    if (strpos($trollText,"№2,") !== false || strpos($trollText," 2") !== false || strpos($trollText," 2,") !== false) {
         $trolleys[$keyNum] = 2;
          $keyNum++;
     }
-    $c = strpos($trollText,"3");
-    if ($c !== false) {
+    if (strpos($trollText,"№3,") !== false || strpos($trollText," 3") !== false || strpos($trollText," 3,") !== false) {
         $trolleys[$keyNum] = 3;
          $keyNum++;
     }
-    $c = strpos($trollText,"4");
-    if ($c !== false) {
+    if (strpos($trollText,"№4,") !== false || strpos($trollText," 4") !== false || strpos($trollText," 4,") !== false) {
         $trolleys[$keyNum] = 4;
          $keyNum++;
     }
-    $c = strpos($trollText,"5");
-    if ($c !== false) {
+    if (strpos($trollText,"№5,") !== false || strpos($trollText," 5") !== false || strpos($trollText," 5,") !== false) {
         $trolleys[$keyNum] = 5;
          $keyNum++;
     }
-    $c = strpos($trollText,"7");
-    if ($c !== false) {
+    if (strpos($trollText,"№7,") !== false || strpos($trollText," 7") !== false || strpos($trollText," 7,") !== false) {
         $trolleys[$keyNum] = 7;
          $keyNum++;
     }
@@ -63,43 +56,43 @@ function getTrolleys($trollText) {
 
 function getTrams($tramText) {
     $trams = [];
-    $c = strpos($tramText,"2");
+    $c = strpos($tramText,"№2,") || strpos($tramText," 2") || strpos($tramText," 2,");
     $keyNum = 0;
     if ($c !== false) {
         $trams[$keyNum] = 2;
         $keyNum++;
     }
-    $c = strpos($tramText,"3");
+    $c = strpos($tramText,"№3,") || strpos($tramText," 3") || strpos($tramText," 3,");
     if ($c !== false) {
         $trams[$keyNum] = 3;
         $keyNum++;
     }
-    $c = strpos($tramText,"4");
+    $c = strpos($tramText,"№4,") || strpos($tramText," 4") || strpos($tramText," 4,");
     if ($c !== false) {
         $trams[$keyNum] = 4;
         $keyNum++;
     }
-    $c = strpos($tramText,"5");
+    $c = strpos($tramText,"№5,") || strpos($tramText," 5") || strpos($tramText," 5,");
     if ($c !== false) {
         $trams[$keyNum] = 5;
         $keyNum++;
     }
-    $c = strpos($tramText,"6");
+   $c = strpos($tramText,"№6,") || strpos($tramText," 6") || strpos($tramText," 6,");
     if ($c !== false) {
         $trams[$keyNum] = 6;
         $keyNum++;
     }
-    $c = strpos($tramText,"7");
+    $c = strpos($tramText,"№7,") || strpos($tramText," 7") || strpos($tramText," 7,");
     if ($c !== false) {
         $trams[$keyNum] = 7;
         $keyNum++;
     }
-    $c = strpos($tramText,"8");
+    $c = strpos($tramText,"№8,") || strpos($tramText," 8") || strpos($tramText," 8,");
     if ($c !== false) {
         $trams[$keyNum] = 8;
         $keyNum++;
     }
-    $c = strpos($tramText,"9");
+    $c = strpos($tramText,"№9,") || strpos($tramText," 9") || strpos($tramText," 9,");
     if ($c !== false) {
         $trams[$keyNum] = 9;
         $keyNum++;
@@ -119,8 +112,8 @@ function getTrams($tramText) {
 
 function getTransportFromText($txt) {
     $result = ["trams"=>NULL, "trolleys"=>NULL];
-    $checkIfTrams = strpos($txt,"трамваев");
-    $checkIfTrolleys = strpos($txt,"троллейбусов");
+    $checkIfTrams = strpos($txt,"трамв");
+    $checkIfTrolleys = strpos($txt,"троллейбус");
     $mainPos = strpos($txt,"ост");
     if ($mainPos === false) {
         $mainPos = strpos($txt,"ул");
@@ -148,84 +141,44 @@ function getTransportFromText($txt) {
     return $result;
 }
 
-function postAnalysis($newPosts, $postsFromDB, $cntNewPosts) {
+function postAnalysis($newPosts, $cntNewPosts) {
     $analysis = array();
-    if ($cntNewPosts == 0) {
-        for ($i = 0; $i < 5; $i++) {
-            $checkPostDB = $postsFromDB[$i]["text"]; //сохраняем сюда текст поста из БД для дальнейших проверок
-            $checkPostNew = $newPosts[$i]["text"]; //сохраняем сюда текст поста со стенки для дальнейших проверок
-            $checkIfNot = "Прервано движение"; //проверочная подстрока для выявления того, что это нужный вид поста
-            $posNot = strpos($checkPostNew,$checkIfNot);
-            if ($posNot === false) {
-               $analysis[$i]["date"] = $newPosts[$i]["date"];
-               $analysis[$i]["text"] = $newPosts[$i]["text"];
-               $analysis[$i]["service"] = true;
-               $analysis[$i]["status"] = false;
-               $analysis[$i]["masTram"] = [];
-               $analysis[$i]["masTrol"] = [];
+    for ($i = 0; $i < 5; $i++) {
+        $checkPostNew = $newPosts[$i]["text"]; //сохраняем сюда текст поста со стенки для дальнейших проверок
+        $checkIfNot = "Прервано движение"; //проверочная подстрока для выявления того, что это нужный вид поста
+        $posNot = strpos($checkPostNew,$checkIfNot);
+        if ($posNot === false) {
+            $analysis[$i]["date"] = $newPosts[$i]["date"];
+            $analysis[$i]["text"] = $newPosts[$i]["text"];
+            $analysis[$i]["service"] = true;
+            $analysis[$i]["status"] = false;
+            $analysis[$i]["masTram"] = [];
+            $analysis[$i]["masTrol"] = [];
+        }
+        else {
+            $checkChange = "Движение восстановлено";
+            $transportFromPost = getTransportFromText($checkPostNew);
+            $posCheck1 = strpos($checkPostNew,$checkChange);
+            $checkChange = "Восстановлено движение";
+            $posCheck2 = strpos($checkPostNew,$checkChange);
+            if ($posCheck1 === false && $posCheck2 === false) {
+                $analysis[$i]["date"] = $newPosts[$i]["date"];
+                $analysis[$i]["text"] = $newPosts[$i]["text"];
+                $analysis[$i]["service"] = false;
+                $analysis[$i]["status"] = false;
+                $analysis[$i]["masTram"] = [$transportFromPost["trams"]];
+                $analysis[$i]["masTrol"] = [$transportFromPost["trolleys"]];
             }
             else {
-              $checkChange = "Движение восстановлено";
-              $transportFromPost = getTransportFromText($checkPostNew);
-              $posCheck = strpos($checkPostNew,$checkChange);
-              if ($posCheck === false) {
-                  $analysis[$i]["date"] = $newPosts[$i]["date"];
-                  $analysis[$i]["text"] = $newPosts[$i]["text"];
-                  $analysis[$i]["service"] = false;
-                  $analysis[$i]["status"] = false;
-                  $analysis[$i]["masTram"] = [$transportFromPost["trams"]];
-                  $analysis[$i]["masTrol"] = [$transportFromPost["trolleys"]];
-              }
-              else {
-                  $analysis[$i]["date"] = $newPosts[$i]["date"];
-                  $analysis[$i]["text"] = $newPosts[$i]["text"];
-                  $analysis[$i]["service"] = false;
-                  $analysis[$i]["status"] = true;
-                  $analysis[$i]["masTram"] = [$transportFromPost["trams"]];
-                  $analysis[$i]["masTrol"] = [$transportFromPost["trolleys"]];
-              }
+                $analysis[$i]["date"] = $newPosts[$i]["date"];
+                $analysis[$i]["text"] = $newPosts[$i]["text"];
+                $analysis[$i]["service"] = false;
+                $analysis[$i]["status"] = true;
+                $analysis[$i]["masTram"] = [$transportFromPost["trams"]];
+                $analysis[$i]["masTrol"] = [$transportFromPost["trolleys"]];
             }
         }
     }
-    else {
-        for ($i = /*$cntNewPosts*/0; $i < 5; $i++) {
-            $checkPostNew = $newPosts[$i]["text"]; //сохраняем сюда текст поста со стенки для дальнейших проверок
-            $checkIfNot = "Прервано движение"; //проверочная подстрока для выявления того, что это нужный вид поста
-            $posNot = strpos($checkPostNew,$checkIfNot);
-            if ($posNot === false) {
-               $analysis[$i]["date"] = $newPosts[$i]["date"];
-               $analysis[$i]["text"] = $newPosts[$i]["text"];
-               $analysis[$i]["service"] = true;
-               $analysis[$i]["status"] = false;
-               $analysis[$i]["masTram"] = [];
-               $analysis[$i]["masTrol"] = [];
-            }
-            else {
-              $checkChange = "Движение восстановлено";
-              $transportFromPost = getTransportFromText($checkPostNew);
-              $posCheck = strpos($checkPostNew,$checkChange);
-              if ($posCheck === false) {
-                  $analysis[$i]["date"] = $newPosts[$i]["date"];
-                  $analysis[$i]["text"] = $newPosts[$i]["text"];
-                  $analysis[$i]["service"] = false;
-                  $analysis[$i]["status"] = false;
-                  $analysis[$i]["masTram"] = [$transportFromPost["trams"]];
-                  $analysis[$i]["masTrol"] = [$transportFromPost["trolleys"]];
-              }
-              else {
-                  $analysis[$i]["date"] = $newPosts[$i]["date"];
-                  $analysis[$i]["text"] = $newPosts[$i]["text"];
-                  $analysis[$i]["service"] = false;
-                  $analysis[$i]["status"] = true;
-                  $analysis[$i]["masTram"] = [$transportFromPost["trams"]];
-                  $analysis[$i]["masTrol"] = [$transportFromPost["trolleys"]];
-              }
-            }
-            
-        }
-        
-    }
-    
     
     return $analysis;
 }
